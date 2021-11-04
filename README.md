@@ -6,7 +6,10 @@ G0 partner/father analysis at age 4.
 
 Each file reads in the raw data, cleans the variables for analysis, and then
 conducts three sets of analyses:
- - 1) Associations between RSBB and broad dietary PCAs
- - 2) Associations between RSBB and nutrient intake
+ - 1) Associations between RSBB and broad dietary PCAs (inc. multiple imputation)
+ - 2) Associations between RSBB and nutrient intake (inc. multiple imputation)
  - 3) Associations between RSBB and following recommended nutrient intake
-guidelines.
+guidelines (inc. multiple imputation)
+
+In addition to a log file, these scripts also save out most of the results used in the
+tables of the paper and creates plots of the results.
