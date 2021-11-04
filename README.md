@@ -1,8 +1,8 @@
 ## Git repository for ALSPAC G0 RSBB and diet analysis code (B3893)
 
-This repository contains three Stata .do files; one for G0 mother analysis
-in pregnancy, another for G0 mother analysis at age 4, and another for
-G0 partner/father analysis at age 4.
+This repository contains three Stata .do files; one for G0 mothers analysis
+in pregnancy, another for G0 mothers analysis at age 4, and another for
+G0 partners/fathers analysis at age 4.
 
 Each file reads in the raw data, cleans the variables for analysis, and then
 conducts three sets of analyses:
