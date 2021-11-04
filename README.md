@@ -13,3 +13,9 @@ guidelines (inc. multiple imputation)
 
 In addition to a log file, these scripts also save out most of the results used in the
 tables of the paper and creates plots of the results.
+
+Note that ALSPAC data access is through a system of managed open access. Information
+about access to ALSPAC data is given on the ALSPAC website 
+(http://www.bristol.ac.uk/alspac/researchers/access/). These datasets used in these
+scripts are linked to ALSPAC project number B3893; if you are interested in accessing
+these datasets, please quote this number during your application.
