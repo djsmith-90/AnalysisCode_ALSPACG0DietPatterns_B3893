@@ -1,6 +1,5 @@
 ***** Analysis code for 'religion and diet' study (B3893) - Exploring potential differences in dietary patterns by religiosity - Pregnancy (32 weeks gest) C file.
 *** Created 13/10/2021 by Dan Smith
-*** Last updated 1/11/2021 by Dan Smith
 *** Stata version 16.0
 
 
@@ -1854,16 +1853,16 @@ tab level_split
 * Healthy PCA
 twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 		col(black) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 0 & model_num == 1, ///
 		col(red) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 0 & model_num == 2, ///
 		col(blue) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Health-conscious PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -1883,16 +1882,16 @@ twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 * Traditional PCA
 twoway (scatter level_split coef if outcome_num == 1 & model_num == 0, ///
 		col(black) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 1 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 1 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 1 & model_num == 1, ///
 		col(red) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 1 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 1 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 1 & model_num == 2, ///
 		col(blue) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 1 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 1 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Traditional PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -1912,16 +1911,16 @@ twoway (scatter level_split coef if outcome_num == 1 & model_num == 0, ///
 * Processed PCA
 twoway (scatter level_split coef if outcome_num == 2 & model_num == 0, ///
 		col(black) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 2 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 2 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 2 & model_num == 1, ///
 		col(red) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 2 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 2 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 2 & model_num == 2, ///
 		col(blue) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 2 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 2 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Processed PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -1941,16 +1940,16 @@ twoway (scatter level_split coef if outcome_num == 2 & model_num == 0, ///
 * Confectionary PCA
 twoway (scatter level_split coef if outcome_num == 3 & model_num == 0, ///
 		col(black) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 3 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 3 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 3 & model_num == 1, ///
 		col(red) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 3 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 3 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 3 & model_num == 2, ///
 		col(blue) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 3 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 3 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Confectionary PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -1970,16 +1969,16 @@ twoway (scatter level_split coef if outcome_num == 3 & model_num == 0, ///
 * Vegetarian PCA
 twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 		col(black) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 4 & model_num == 1, ///
 		col(red) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 4 & model_num == 2, ///
 		col(blue) msize(vsmall) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Vegetarian PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2011,16 +2010,16 @@ graph export ".\PregC_Results\Preg_RSBB_DietPatterns.pdf", replace
 * Healthy PCA
 twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 0 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 0 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Health-conscious PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2040,16 +2039,16 @@ twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 * Vegetarian PCA
 twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 4 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 4 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Vegetarian PCA", size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2082,16 +2081,16 @@ graph export ".\PregC_Results\Preg_RSBB_DietPatterns_TradConfProc.pdf", replace
 * Healthy PCA
 twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 0 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 0 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 0 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 0 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Health-conscious PCA") ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2113,16 +2112,16 @@ graph export ".\PregC_Results\Preg_RSBB_DietPatterns_Healthy.pdf", replace
 * Traditional PCA
 twoway (scatter level_split coef if outcome_num == 1 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 1 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 1 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 1 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 1 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 1 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 1 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 1 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 1 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Traditional PCA") ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2144,16 +2143,16 @@ graph export ".\PregC_Results\Preg_RSBB_DietPatterns_Traditional.pdf", replace
 * Processed PCA
 twoway (scatter level_split coef if outcome_num == 2 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 2 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 2 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 2 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 2 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 2 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 2 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 2 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 2 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Processed PCA") ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2175,16 +2174,16 @@ graph export ".\PregC_Results\Preg_RSBB_DietPatterns_Processed.pdf", replace
 * Confectionary PCA
 twoway (scatter level_split coef if outcome_num == 3 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 3 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 3 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 3 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 3 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 3 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 3 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 3 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 3 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Confectionary PCA") ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
@@ -2206,16 +2205,16 @@ graph export ".\PregC_Results\Preg_RSBB_DietPatterns_Confectionary.pdf", replace
 * Vegetarian PCA
 twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 		col(black) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 0, ///
-		horizontal col(black) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 0, ///
+		horizontal col(black)) ///
 	(scatter level_split coef if outcome_num == 4 & model_num == 1, ///
 		col(red) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 1, ///
-		horizontal col(red) msize(vtiny)) ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 1, ///
+		horizontal col(red)) ///
 	(scatter level_split coef if outcome_num == 4 & model_num == 2, ///
 		col(blue) msize(small) msym(D)) ///
-	(rcap lci uci level_split if outcome_num == 4 & model_num == 2, ///
-		horizontal col(blue) msize(vtiny)), ///
+	(rspike lci uci level_split if outcome_num == 4 & model_num == 2, ///
+		horizontal col(blue)), ///
 	ysc(reverse) title("Vegetarian PCA") ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
