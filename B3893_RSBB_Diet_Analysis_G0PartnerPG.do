@@ -1193,6 +1193,11 @@ postfile pg_diet str20 outcome str30 exposure str5 model str20 level ///
 	n coef se lci uci p ///
 	using "age4_PG_diet_results.dta", replace
 
+* Will also save another postfile, which just has the overall p-value testing for an overall effect of the exposure on the outcome
+capture postclose pg_diet_p
+postfile pg_diet_p str20 outcome str30 exposure str5 model p_exp ///
+	using "age4_PG_diet_p_results.dta", replace
+
 	
 foreach var of varlist pg2540-pg2543 {
 	
@@ -1240,6 +1245,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -1267,6 +1278,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab belief_CCA
@@ -1296,6 +1313,11 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 	
 	
 	//// Exposure 2) Denomination affiliation
@@ -1327,6 +1349,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -1354,6 +1382,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab denom_CCA
@@ -1383,6 +1417,11 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 		
 		
 	//// Exposure 3) Church attendance
@@ -1414,6 +1453,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -1441,6 +1486,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab attend_CCA
@@ -1470,6 +1521,11 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 		
 		
 	//// Exposure 4) 'Lapsed' Christians
@@ -1511,6 +1567,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -1548,6 +1610,12 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab lapsed_CCA
@@ -1587,9 +1655,23 @@ foreach var of varlist pg2540-pg2543 {
 	
 	post pg_diet ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_diet_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 }
 
 postclose pg_diet
+postclose pg_diet_p
+
+
+*** Save the results testing exposure on outcome as CSV file, as easier to work with
+use "age4_PG_diet_p_results.dta", clear
+
+format p_exp %9.3f
+
+outsheet using ".\G0Partner_Age4_Results\PCA_fullResults_p.csv", comma replace
 
 
 ****************************************************************************
@@ -2328,6 +2410,11 @@ capture postclose pg_nut
 postfile pg_nut str20 outcome str30 exposure str5 model str20 level /// 
 	n coef se lci uci p ///
 	using "age4_PG_nutrient_results.dta", replace
+	
+* Will also save another postfile, which just has the overall p-value testing for an overall effect of the exposure on the outcome
+capture postclose pg_nut_p
+postfile pg_nut_p str20 outcome str30 exposure str5 model p_exp ///
+	using "age4_PG_nutrient_p_results.dta", replace
 
 	
 foreach var of varlist pg2501-pg2536 {
@@ -2463,6 +2550,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -2490,6 +2583,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab belief_CCA
@@ -2519,6 +2618,11 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 	
 	
 	//// Exposure 2) Denomination affiliation
@@ -2550,6 +2654,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -2577,6 +2687,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab denom_CCA
@@ -2606,6 +2722,11 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 		
 		
 	//// Exposure 3) Church attendance
@@ -2637,6 +2758,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -2664,6 +2791,11 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab attend_CCA
@@ -2693,6 +2825,10 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	mi test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 		
 		
 	//// Exposure 4) 'Lapsed' Christians
@@ -2734,6 +2870,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	regress `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -2771,6 +2913,12 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab lapsed_CCA
@@ -2810,9 +2958,27 @@ foreach var of varlist pg2501-pg2536 {
 	
 	post pg_nut ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 }
 
 postclose pg_nut
+postclose pg_nut_p
+
+
+*** Save the results testing exposure on outcome as CSV file, as easier to work with (split by exposure, as this is how SI is arranged, and only include the MI results)
+use "age4_PG_nutrient_p_results.dta", clear
+
+format p_exp %9.3f
+
+outsheet using ".\G0Partner_Age4_Results\nut_belief_p.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nut_religion_p.csv" if exposure == "Denomination (ref = none)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nut_attend_p.csv" if exposure == "Church attendance (ref = not a" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nut_belief_relig_p.csv" if exposure == "Belief and religion (ref = non" & model == "MI", comma replace
+
 
 
 ********************************************************************************
@@ -3535,6 +3701,11 @@ capture postclose pg_nut_RNI
 postfile pg_nut_RNI str20 outcome str30 exposure str5 model str20 level /// 
 	n coef se lci uci p ///
 	using "age4_PG_nutrient_RNI_results.dta", replace
+	
+* Will also save another postfile, which just has the overall p-value testing for an overall effect of the exposure on the outcome
+capture postclose pg_nut_RNI_p
+postfile pg_nut_RNI_p str20 outcome str30 exposure str5 model p_exp ///
+	using "age4_PG_nutrient_RNI_p_results.dta", replace
 
 	
 foreach var of varlist calc_RNI-zinc_RNI {
@@ -3571,6 +3742,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	logistic `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -3598,6 +3775,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable - For some reason the 'mi estimate: logistic' command gives the output in log-odds, rather than odds ratios, so need to manually construct these from the log-odds coefficient, the log SE and the critical value
 	quietly tab belief_CCA
@@ -3634,6 +3817,11 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
 	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 	
 	//// Exposure 2) Denomination affiliation
 	local exp = "Denomination (ref = none)"
@@ -3664,6 +3852,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	logistic `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -3691,6 +3885,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab denom_CCA
@@ -3726,6 +3926,11 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 		
 		
 	//// Exposure 3) Church attendance
@@ -3757,6 +3962,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	logistic `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -3784,6 +3995,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab attend_CCA
@@ -3819,6 +4036,11 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 		
 		
 	//// Exposure 4) 'Lapsed' Christians
@@ -3860,6 +4082,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	logistic `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp if _mi_m == 0
@@ -3897,6 +4125,12 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
 		
 	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
 	quietly tab lapsed_CCA
@@ -3945,9 +4179,27 @@ foreach var of varlist calc_RNI-zinc_RNI {
 	
 	post pg_nut_RNI ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
 		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_RNI_p ("`outcome'") ("`exp'") ("`model'") (`p_exp')
 }
 
 postclose pg_nut_RNI
+postclose pg_nut_RNI_p
+
+
+*** Save the results testing exposure on outcome as CSV file, as easier to work with (split by exposure, as this is how SI is arranged, and only include the MI results)
+use "age4_PG_nutrient_RNI_p_results.dta", clear
+
+format p_exp %9.3f
+
+outsheet using ".\G0Partner_Age4_Results\nutRNI_belief_p.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nutRNI_religion_p.csv" if exposure == "Denomination (ref = none)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nutRNI_attend_p.csv" if exposure == "Church attendance (ref = not a" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nutRNI_belief_relig_p.csv" if exposure == "Belief and religion (ref = non" & model == "MI", comma replace
+
 
 
 ********************************************************************************
