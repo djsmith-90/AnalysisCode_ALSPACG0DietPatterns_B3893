@@ -1,5 +1,5 @@
 ***** Analysis code for 'religion and diet' study (B3893) - Exploring potential differences in dietary patterns by religiosity - Pregnancy (32 weeks gest) C file.
-*** Created 13/10/2021 by Dan Smith
+*** Created 13/10/2021 by Dan Major-Smith
 *** Stata version 16.0
 
 
@@ -1945,9 +1945,9 @@ twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 		col(blue) msize(vsmall) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 0 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Health-conscious PCA", size(medium)) ytitle("") ///
-	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
-	xline(0, lcol(black) lpattern(dash)) ///
+	ysc(reverse) title(`""Health-conscious""', size(medium)) ytitle("") ///
+	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(vsmall) format(%9.1f)) ///
+	xline(0, lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
 	1 `" "Believes in God" "(ref = No)" "' ///
 	3 `" "Christian" "(ref = None)" "' ///
@@ -1956,7 +1956,7 @@ twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 	7 `" "Church min 1 per/year" "(ref = Not at all)" "' ///
 	9 `" "Christian non-believer" "(ref = No religion/belief)" "' ///
 	10 `" "Christian believer" "ref = No religion/belief)" "' ///
-	11 `" "Other" "(ref = No religion/belief)" "', labsize(tiny) angle(0)) ///
+	11 `" "Other" "(ref = No religion/belief)" "', labsize(1.8rs) angle(0)) ///
 	legend(order(1 "Unadjusted (CCA)" 3 "Adjusted (CCA)" 5 "Adjusted (MI)") ///
 	cols(3) size(small)) ///
 	name(healthy, replace)
@@ -1974,9 +1974,9 @@ twoway (scatter level_split coef if outcome_num == 1 & model_num == 0, ///
 		col(blue) msize(vsmall) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 1 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Traditional PCA", size(medium)) ytitle("") ///
-	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
-	xline(0, lcol(black) lpattern(dash)) ///
+	ysc(reverse) title(`""Traditional""', size(medium)) ytitle("") ///
+	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(vsmall) format(%9.1f)) ///
+	xline(0, lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
 	1 `" "Believes in God" "(ref = No)" "' ///
 	3 `" "Christian" "(ref = None)" "' ///
@@ -1985,7 +1985,7 @@ twoway (scatter level_split coef if outcome_num == 1 & model_num == 0, ///
 	7 `" "Church min 1 per/year" "(ref = Not at all)" "' ///
 	9 `" "Christian non-believer" "(ref = No religion/belief)" "' ///
 	10 `" "Christian believer" "ref = No religion/belief)" "' ///
-	11 `" "Other" "(ref = No religion/belief)" "', labsize(tiny) angle(0)) ///
+	11 `" "Other" "(ref = No religion/belief)" "', labsize(1.8rs) angle(0)) ///
 	legend(order(1 "Unadjusted (CCA)" 3 "Adjusted (CCA)" 5 "Adjusted (MI)") ///
 	cols(3) size(small)) ///
 	name(trad, replace)
@@ -2003,9 +2003,9 @@ twoway (scatter level_split coef if outcome_num == 2 & model_num == 0, ///
 		col(blue) msize(vsmall) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 2 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Processed PCA", size(medium)) ytitle("") ///
-	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
-	xline(0, lcol(black) lpattern(dash)) ///
+	ysc(reverse) title(`""Processed""', size(medium)) ytitle("") ///
+	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(vsmall) format(%9.1f)) ///
+	xline(0, lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
 	1 `" "Believes in God" "(ref = No)" "' ///
 	3 `" "Christian" "(ref = None)" "' ///
@@ -2014,7 +2014,7 @@ twoway (scatter level_split coef if outcome_num == 2 & model_num == 0, ///
 	7 `" "Church min 1 per/year" "(ref = Not at all)" "' ///
 	9 `" "Christian non-believer" "(ref = No religion/belief)" "' ///
 	10 `" "Christian believer" "ref = No religion/belief)" "' ///
-	11 `" "Other" "(ref = No religion/belief)" "', labsize(tiny) angle(0)) ///
+	11 `" "Other" "(ref = No religion/belief)" "', labsize(1.8rs) angle(0)) ///
 	legend(order(1 "Unadjusted (CCA)" 3 "Adjusted (CCA)" 5 "Adjusted (MI)") ///
 	cols(3) size(small)) ///
 	name(process, replace)
@@ -2032,9 +2032,9 @@ twoway (scatter level_split coef if outcome_num == 3 & model_num == 0, ///
 		col(blue) msize(vsmall) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 3 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Confectionary PCA", size(medium)) ytitle("") ///
-	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
-	xline(0, lcol(black) lpattern(dash)) ///
+	ysc(reverse) title(`""Confectionery""', size(medium)) ytitle("") ///
+	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(vsmall) format(%9.1f)) ///
+	xline(0, lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
 	1 `" "Believes in God" "(ref = No)" "' ///
 	3 `" "Christian" "(ref = None)" "' ///
@@ -2043,7 +2043,7 @@ twoway (scatter level_split coef if outcome_num == 3 & model_num == 0, ///
 	7 `" "Church min 1 per/year" "(ref = Not at all)" "' ///
 	9 `" "Christian non-believer" "(ref = No religion/belief)" "' ///
 	10 `" "Christian believer" "ref = No religion/belief)" "' ///
-	11 `" "Other" "(ref = No religion/belief)" "', labsize(tiny) angle(0)) ///
+	11 `" "Other" "(ref = No religion/belief)" "', labsize(1.8rs) angle(0)) ///
 	legend(order(1 "Unadjusted (CCA)" 3 "Adjusted (CCA)" 5 "Adjusted (MI)") ///
 	cols(3) size(small)) ///
 	name(confect, replace)
@@ -2061,9 +2061,9 @@ twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 		col(blue) msize(vsmall) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 4 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Vegetarian PCA", size(medium)) ytitle("") ///
-	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
-	xline(0, lcol(black) lpattern(dash)) ///
+	ysc(reverse) title(`""Vegetarian""', size(medium)) ytitle("") ///
+	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(vsmall) format(%9.1f)) ///
+	xline(0, lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
 	1 `" "Believes in God" "(ref = No)" "' ///
 	3 `" "Christian" "(ref = None)" "' ///
@@ -2072,7 +2072,7 @@ twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 	7 `" "Church min 1 per/year" "(ref = Not at all)" "' ///
 	9 `" "Christian non-believer" "(ref = No religion/belief)" "' ///
 	10 `" "Christian believer" "ref = No religion/belief)" "' ///
-	11 `" "Other" "(ref = No religion/belief)" "', labsize(tiny) angle(0)) ///
+	11 `" "Other" "(ref = No religion/belief)" "', labsize(1.8rs) angle(0)) ///
 	legend(order(1 "Unadjusted (CCA)" 3 "Adjusted (CCA)" 5 "Adjusted (MI)") ///
 	cols(3) size(small)) ///
 	name(veg, replace)
@@ -2081,7 +2081,8 @@ twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 ** Combine graphs together with a single legend using the 'grc1leg' user-written package
 *ssc install grc1leg, replace
 
-grc1leg healthy trad process confect veg
+grc1leg healthy trad process confect veg, imargin(tiny)
+graph display, ysize(8) xsize(12)
 
 * This isn't really the nicest plot, though...
 graph export ".\PregC_Results\Preg_RSBB_DietPatterns.pdf", replace
@@ -2102,7 +2103,7 @@ twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 0 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Health-conscious PCA", size(medium)) ytitle("") ///
+	ysc(reverse) title(`""Health-conscious""', size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -2131,7 +2132,7 @@ twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 4 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Vegetarian PCA", size(medium)) ytitle("") ///
+	ysc(reverse) title(`""Vegetarian""', size(medium)) ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -2173,7 +2174,7 @@ twoway (scatter level_split coef if outcome_num == 0 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 0 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Health-conscious PCA") ytitle("") ///
+	ysc(reverse) title(`""Health-conscious""') ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -2204,7 +2205,7 @@ twoway (scatter level_split coef if outcome_num == 1 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 1 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Traditional PCA") ytitle("") ///
+	ysc(reverse) title(`""Traditional""') ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -2235,7 +2236,7 @@ twoway (scatter level_split coef if outcome_num == 2 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 2 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Processed PCA") ytitle("") ///
+	ysc(reverse) title(`""Processed""') ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -2266,7 +2267,7 @@ twoway (scatter level_split coef if outcome_num == 3 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 3 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Confectionary PCA") ytitle("") ///
+	ysc(reverse) title(`""Confectionery""') ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -2297,7 +2298,7 @@ twoway (scatter level_split coef if outcome_num == 4 & model_num == 0, ///
 		col(blue) msize(small) msym(D)) ///
 	(rspike lci uci level_split if outcome_num == 4 & model_num == 2, ///
 		horizontal col(blue)), ///
-	ysc(reverse) title("Vegetarian PCA") ytitle("") ///
+	ysc(reverse) title(`""Vegetarian""') ytitle("") ///
 	xscale(range(-0.4 0.6)) xlabel(-0.4 (0.2) 0.6, labsize(small) format(%9.1f)) ///
 	xline(0, lcol(black) lpattern(dash)) ///
 	ylabel(0 `" "Not sure believes in God" "(ref = No)" "' ///
@@ -3246,6 +3247,55 @@ postclose preg_nut_p
 *** Save the results testing exposure on outcome as CSV file, as easier to work with (split by exposure, as this is how SI is arranged, and only include the MI results)
 use "preg_nutrient_p_results.dta", clear
 
+* Need to recode the outcome variables to numeric and put in more sensible order (currently alphabetical)
+tab outcome
+
+gen outcome_num = 0
+replace outcome_num = 1 if outcome == "Energy (kJ)"
+replace outcome_num = 2 if outcome == "Carbohydrate (g)"
+replace outcome_num = 3 if outcome == "Sugar (g)"
+replace outcome_num = 4 if outcome == "Non-milk sugars (g)"
+replace outcome_num = 5 if outcome == "Starch (g)"
+replace outcome_num = 6 if outcome == "Fibre (g)"
+replace outcome_num = 7 if outcome == "Fat (g)"
+replace outcome_num = 8 if outcome == "Monounsaturated fat "
+replace outcome_num = 9 if outcome == "Polyunsaturated fat "
+replace outcome_num = 10 if outcome == "Saturated fat (g)"
+replace outcome_num = 11 if outcome == "Omega-3 (g)"
+replace outcome_num = 12 if outcome == "Cholesterol (mg)"
+replace outcome_num = 13 if outcome == "Protein (g)"
+replace outcome_num = 14 if outcome == "Thiamin (mg)"
+replace outcome_num = 15 if outcome == "Riboflavin (mg)"
+replace outcome_num = 16 if outcome == "Niacin equivalent (m"
+replace outcome_num = 17 if outcome == "Vitamin B6 (mg)"
+replace outcome_num = 18 if outcome == "Vitamin B12 (ug)"
+replace outcome_num = 19 if outcome == "Folate (ug)"
+replace outcome_num = 20 if outcome == "Vitamin C (mg)"
+replace outcome_num = 21 if outcome == "Retinol (ug)"
+replace outcome_num = 22 if outcome == "Carotene (ug)"
+replace outcome_num = 23 if outcome == "Vitamin D (ug)"
+replace outcome_num = 24 if outcome == "Vitamin E (mg)"
+replace outcome_num = 25 if outcome == "Calcium (mg)"
+replace outcome_num = 26 if outcome == "Phosphorus (mg)"
+replace outcome_num = 27 if outcome == "Magnesium (mg)"
+replace outcome_num = 28 if outcome == "Sodium (mg)"
+replace outcome_num = 29 if outcome == "Potassium (mg)"
+replace outcome_num = 30 if outcome == "Iron (mg)"
+replace outcome_num = 31 if outcome == "Zinc (mg)"
+replace outcome_num = 32 if outcome == "Selenium (ug)"
+replace outcome_num = 33 if outcome == "Iodine (ug)"
+
+label define out_lb 1 "Energy (kJ)" 2 "Carbohydrates (g)" 3 "Sugars (g)" 4 "Free sugars (g)" 5 "Starch (g)" 6 "NSP (Fibre; g)" 7 "Fat (g)" 8 "Monounsaturated fat (g)" 9 "Polyunsaturated fat (g)" 10 "Saturated fat (g)" 11 "Omega-3 (g; from fish)" 12 "Cholesterol (mg)" 13 "Protein (g)" 14 "Thiamin (mg)" 15 "Riboflavin (mg)" 16 "Niacin equivalent (mg)" 17 "Vitamin B6 (mg)" 18 "Vitamin B12 (ug)" 19 "Folate (ug)" 20 "Vitamin C (mg)" 21 "Retinol/Vitamin A (ug)" 22 "Carotene (ug)" 23 "Vitamin D (ug)" 24 "Vitamin E (mg)" 25 "Calcium (mg)" 26 "Phosphorus (mg)" 27 "Magnesium (mg)" 28 "Sodium (mg)" 29 "Potassium (mg)" 30 "Iron (mg)" 31 "Zinc (mg)" 32 "Selenium (ug)" 33 "Iodine (ug)"
+
+numlabel out_lb, add
+label value outcome_num out_lb
+tab outcome_num
+
+numlabel out_lb, remove
+
+sort outcome_num
+drop outcome_num
+
 format p_exp %9.3f
 
 outsheet using ".\PregC_Results\nut_belief_p.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
@@ -3306,7 +3356,7 @@ replace outcome_num = 31 if outcome == "Zinc (mg)"
 replace outcome_num = 32 if outcome == "Selenium (ug)"
 replace outcome_num = 33 if outcome == "Iodine (ug)"
 
-label define out_lb 1 "Energy (kJ)" 2 "Carbohydrates (g)" 3 "Sugars (g)" 4 "Non-milk sugars (g)" 5 "Starch (g)" 6 "Fibre (g)" 7 "Fat (g)" 8 "Monounsaturated fat (g)" 9 "Polyunsaturated fat (g)" 10 "Saturated fat (g)" 11 "Omega-3 (g; from fish)" 12 "Cholesterol (mg)" 13 "Protein (g)" 14 "Thiamin (mg)" 15 "Riboflavin (mg)" 16 "Niacin equivalent (mg)" 17 "Vitamin B6 (mg)" 18 "Vitamin B12 (ug)" 19 "Folate (ug)" 20 "Vitamin C (mg)" 21 "Retinol/Vitamin A (ug)" 22 "Carotene (ug)" 23 "Vitamin D (ug)" 24 "Vitamin E (mg)" 25 "Calcium (mg)" 26 "Phosphorus (mg)" 27 "Magnesium (mg)" 28 "Sodium (mg)" 29 "Potassium (mg)" 30 "Iron (mg)" 31 "Zinc (mg)" 32 "Selenium (ug)" 33 "Iodine (ug)"
+label define out_lb 1 "Energy (kJ)" 2 "Carbohydrates (g)" 3 "Total sugars (g)" 4 "Free sugars (g)" 5 "Starch (g)" 6 "NSP (Fibre; g)" 7 "Fat (g)" 8 "Monounsaturated fat (g)" 9 "Polyunsaturated fat (g)" 10 "Saturated fat (g)" 11 "Omega-3 (g; from fish)" 12 "Cholesterol (mg)" 13 "Protein (g)" 14 "Thiamin (mg)" 15 "Riboflavin (mg)" 16 "Niacin equivalent (mg)" 17 "Vitamin B6 (mg)" 18 "Vitamin B12 (ug)" 19 "Folate (ug)" 20 "Vitamin C (mg)" 21 "Retinol/Vitamin A (ug)" 22 "Carotene (ug)" 23 "Vitamin D (ug)" 24 "Vitamin E (mg)" 25 "Calcium (mg)" 26 "Phosphorus (mg)" 27 "Magnesium (mg)" 28 "Sodium (mg)" 29 "Potassium (mg)" 30 "Iron (mg)" 31 "Zinc (mg)" 32 "Selenium (ug)" 33 "Iodine (ug)"
 
 numlabel out_lb, add
 label value outcome_num out_lb
@@ -3338,7 +3388,7 @@ graph export ".\PregC_Results\Nutrients_BeliefInGod_pvalues.pdf", replace
 * Now explore how belief in God associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold - Then save these results as CSV files to potentially use as tables
 bysort outcome exposure model: egen p_combined = min(p)
 
-sort outcome exposure level
+sort outcome_num exposure level
 
 gen belief_bon = 0
 replace belief_bon = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05/33
@@ -3632,24 +3682,21 @@ tab carb_min if _mi_m == 0, m
 
 ** Cholesterol (mg) - No recommendations for cholesterol
 
-** Energy (kJ) - Estimated average requirements 2000kJ for adult women (+200 for pregnancy)
+** Energy (kJ) - Estimated average requirements 8400kJ for adult women (+800 for pregnancy)
 gen energy_EAR = .
-replace energy_EAR = 1 if c3804 > 2200
-replace energy_EAR = 0 if c3804 <= 2200 & c3804 < .
+replace energy_EAR = 1 if c3804 < 9200
+replace energy_EAR = 0 if c3804 >= 9200 & c3804 < .
 tab energy_EAR if _mi_m == 0, m
 
-label define energy_lb 0 "<= EAR (2200kJ)" 1 "> EAR (2200kJ)"
+label define energy_lb 0 ">= EAR (9200kJ)" 1 "< EAR (9200kJ)"
 numlabel energy_lb, add
 label values energy_EAR energy_lb
 tab energy_EAR if _mi_m == 0, m
 
-* As no-one below the EAR, will drop this variable
-drop energy_EAR
-
 ** Fat (g) - Maximum 78g for adult women
 gen fat_max = .
-replace fat_max = 1 if c3805 > 78
-replace fat_max = 0 if c3805 <= 78 & c3805 < .
+replace fat_max = 1 if c3805 > 78 & c3805 < .
+replace fat_max = 0 if c3805 <= 78
 tab fat_max if _mi_m == 0, m
 
 label define fat_lb 0 "<= max (78g)" 1 "> max (78g)"
@@ -3657,11 +3704,11 @@ numlabel fat_lb, add
 label values fat_max fat_lb
 tab fat_max if _mi_m == 0, m
 
-** Omega-3 fatty acid from fish only (g) - No RNI, but more omega-3 recommended, although do caution against eating oily fish more than twice a week in pregnancy (https://www.nutrition.org.uk/life-stages/pregnancy/healthy-eating-during-pregnancy/nutrition-during-pregnancy/). Because of it's potential importance in pregnancy for birth outcomes, will code into low (<0.2g/day) and high (>0.25g/day) as this is where there is a natural split in the data (but important to bear in mind that this is not based on any formal RNI recommendations, and omega-3 is only counted for fish, not sources from other foods)
+** Omega-3 fatty acid from fish only (g) - No RNI, but more omega-3 recommended, although do caution against eating oily fish more than twice a week in pregnancy (https://www.nutrition.org.uk/life-stages/pregnancy/healthy-eating-during-pregnancy/nutrition-during-pregnancy/). Because of it's potential importance in pregnancy for birth outcomes, will code into low (<0.25g/day) and high (>0.25g/day) as this is where there is a natural split in the data (but important to bear in mind that this is not based on any formal RNI recommendations, and omega-3 is only counted for fish, not sources from other foods)
 sum c3806 if c3806 > 0.2 & c3806 < 0.25
 
 gen omega3 = .
-replace omega3 = 1 if c3806 < 0.2
+replace omega3 = 1 if c3806 < 0.25
 replace omega3 = 0 if c3806 >= 0.25 & c3806 < .
 tab omega3 if _mi_m == 0, m
 
@@ -3738,8 +3785,8 @@ tab niacinEq_RNI if _mi_m == 0, m
 
 ** Non-milk extrinsic sugars (g; 'free sugars') - Maximum 27g for adult women
 gen sugar_max = .
-replace sugar_max = 1 if c3816 > 27
-replace sugar_max = 0 if c3816 <= 27 & c3816 < .
+replace sugar_max = 1 if c3816 > 27 & c3816 < .
+replace sugar_max = 0 if c3816 <= 27
 tab sugar_max if _mi_m == 0, m
 
 label define sugar_lb 0 "<= max (27g)" 1 "> max (27g)"
@@ -3747,13 +3794,13 @@ numlabel sugar_lb, add
 label values sugar_max sugar_lb
 tab sugar_max if _mi_m == 0, m
 
-** Fibre (g) - RNI of 30g for adult women
+** Fibre (g) - RNI of 22.5g for adult women
 gen fibre_RNI = .
-replace fibre_RNI = 1 if c3817 < 30
-replace fibre_RNI = 0 if c3817 >= 30 & c3817 < .
+replace fibre_RNI = 1 if c3817 < 22.5
+replace fibre_RNI = 0 if c3817 >= 22.5 & c3817 < .
 tab fibre_RNI if _mi_m == 0, m
 
-label define fibre_lb 0 ">= RNI (30g)" 1 "< RNI (30g)"
+label define fibre_lb 0 ">= RNI (22.5g)" 1 "< RNI (22.5g)"
 numlabel fibre_lb, add
 label values fibre_RNI fibre_lb
 tab fibre_RNI if _mi_m == 0, m
@@ -3826,8 +3873,8 @@ tab ribo_RNI if _mi_m == 0, m
 
 ** Saturated fat (g) - Maximum 24g for adult women
 gen sat_max = .
-replace sat_max = 1 if c3824 > 24
-replace sat_max = 0 if c3824 <= 24 & c3824 < .
+replace sat_max = 1 if c3824 > 24 & c3824 < .
+replace sat_max = 0 if c3824 <= 24
 tab sat_max if _mi_m == 0, m
 
 label define sat_lb 0 "<= max (24g)" 1 "> max (24g)"
@@ -4451,6 +4498,52 @@ postclose preg_nut_RNI_p
 *** Save the results testing exposure on outcome as CSV file, as easier to work with (split by exposure, as this is how SI is arranged, and only include the MI results)
 use "preg_nutrient_RNI_p_results.dta", clear
 
+* Need to recode the outcome variables to numeric and put in more sensible order (currently alphabetical)
+tab outcome
+
+gen outcome_num = 0
+replace outcome_num = 1 if outcome == "energy_EAR"
+replace outcome_num = 2 if outcome == "carb_min"
+replace outcome_num = 3 if outcome == "sugar_max"
+replace outcome_num = 4 if outcome == "fibre_RNI"
+replace outcome_num = 5 if outcome == "fat_max"
+replace outcome_num = 6 if outcome == "mono_RNI"
+replace outcome_num = 7 if outcome == "poly_RNI"
+replace outcome_num = 8 if outcome == "sat_max"
+replace outcome_num = 9 if outcome == "omega3"
+replace outcome_num = 10 if outcome == "prot_RNI"
+replace outcome_num = 11 if outcome == "thiamin_RNI"
+replace outcome_num = 12 if outcome == "ribo_RNI"
+replace outcome_num = 13 if outcome == "niacinEq_RNI"
+replace outcome_num = 14 if outcome == "vitB6_RNI"
+replace outcome_num = 15 if outcome == "vitB12_RNI"
+replace outcome_num = 16 if outcome == "folate_RNI"
+replace outcome_num = 17 if outcome == "vitC_RNI"
+replace outcome_num = 18 if outcome == "ret_RNI"
+replace outcome_num = 19 if outcome == "vitD_RNI"
+replace outcome_num = 20 if outcome == "vitE_min"
+replace outcome_num = 21 if outcome == "calc_RNI"
+replace outcome_num = 22 if outcome == "phos_RNI"
+replace outcome_num = 23 if outcome == "mag_RNI"
+replace outcome_num = 24 if outcome == "sodium_RNI"
+replace outcome_num = 25 if outcome == "pot_RNI"
+replace outcome_num = 26 if outcome == "iron_RNI"
+replace outcome_num = 27 if outcome == "zinc_RNI"
+replace outcome_num = 28 if outcome == "selen_RNI"
+replace outcome_num = 29 if outcome == "iodine_RNI"
+
+label define out_lb 1 "Energy < EAR (9,200kJ)" 2 "Carbohydrates < min (267g)" 3 "Free sugars > max (27g)" 4 "NSP Fibre < RNI (22.5g)" 5 "Fat > max (78g)" 6 "Monounsaturated fat < RNI (29g)" 7 "Polyunsaturated fat < RNI (14g)" 8 "Saturated fat > max (24g)" 9 "Omega-3 < 0.2g (from fish)" 10 "Protein < RNI (51g)" 11 "Thiamin < RNI (0.9mg)" 12 "Riboflavin < RNI (1.4mg)" 13 "Niacin equivalent < RNI (13.2mg)" 14 "Vitamin B6 < RNI (1.2mg)" 15 "Vitamin B12 < RNI (1.5ug)" 16 "Folate < RNI (300ug)" 17 "Vitamin C < RNI (50mg)" 18 "Retinol/Vitamin A < RNI (700ug)" 19 "Vitamin D < RNI (10ug)" 20 "Vitamin E < min (3.8ug)" 21 "Calcium < RNI (700mg)" 22 "Phosphorus < RNI (550mg)" 23 "Magnesium < RNI (270mg)" 24 "Sodium < RNI (1.6g) | > max (2.4g)" 25 "Potassium < RNI (3500mg)" 26 "Iron < RNI (14.8mg)" 27 "Zinc < RNI (7mg)" 28 "Selenium < RNI (60ug)" 29 "Iodine < RNI (140ug)"
+
+numlabel out_lb, add
+label value outcome_num out_lb
+tab outcome_num
+
+numlabel out_lb, remove
+
+sort outcome_num
+drop outcome_num
+
+* Change the format of the p-values and save out this file
 format p_exp %9.3f
 
 outsheet using ".\PregC_Results\nutRNI_belief_p.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
@@ -4469,7 +4562,7 @@ format %9.3f coef-p
 gen logp = -log10(p)
 sum logp
 
-* What's the Bonferroni correction here? Are 28 outcomes assessed, so 0.05 / 28 = 0.0018 (and -log10 of this is 2.75) - As nutrients not independent from one another perhaps the Bonferroni correction is too conservative, but will go with it for now.
+* What's the Bonferroni correction here? Are 29 outcomes assessed, so 0.05 / 29 = 0.0017 (and -log10 of this is 2.76) - As nutrients not independent from one another perhaps the Bonferroni correction is too conservative, but will go with it for now.
 
 ** Plot -log10 of each variable and see if any reach Bonferroni significance (will use imputed results for this)
 
@@ -4477,36 +4570,37 @@ sum logp
 tab outcome
 
 gen outcome_num = 0
-replace outcome_num = 1 if outcome == "carb_min"
-replace outcome_num = 2 if outcome == "sugar_max"
-replace outcome_num = 3 if outcome == "fibre_RNI"
-replace outcome_num = 4 if outcome == "fat_max"
-replace outcome_num = 5 if outcome == "mono_RNI"
-replace outcome_num = 6 if outcome == "poly_RNI"
-replace outcome_num = 7 if outcome == "sat_max"
-replace outcome_num = 8 if outcome == "omega3"
-replace outcome_num = 9 if outcome == "prot_RNI"
-replace outcome_num = 10 if outcome == "thiamin_RNI"
-replace outcome_num = 11 if outcome == "ribo_RNI"
-replace outcome_num = 12 if outcome == "niacinEq_RNI"
-replace outcome_num = 13 if outcome == "vitB6_RNI"
-replace outcome_num = 14 if outcome == "vitB12_RNI"
-replace outcome_num = 15 if outcome == "folate_RNI"
-replace outcome_num = 16 if outcome == "vitC_RNI"
-replace outcome_num = 17 if outcome == "ret_RNI"
-replace outcome_num = 18 if outcome == "vitD_RNI"
-replace outcome_num = 19 if outcome == "vitE_min"
-replace outcome_num = 20 if outcome == "calc_RNI"
-replace outcome_num = 21 if outcome == "phos_RNI"
-replace outcome_num = 22 if outcome == "mag_RNI"
-replace outcome_num = 23 if outcome == "sodium_RNI"
-replace outcome_num = 24 if outcome == "pot_RNI"
-replace outcome_num = 25 if outcome == "iron_RNI"
-replace outcome_num = 26 if outcome == "zinc_RNI"
-replace outcome_num = 27 if outcome == "selen_RNI"
-replace outcome_num = 28 if outcome == "iodine_RNI"
+replace outcome_num = 1 if outcome == "energy_EAR"
+replace outcome_num = 2 if outcome == "carb_min"
+replace outcome_num = 3 if outcome == "sugar_max"
+replace outcome_num = 4 if outcome == "fibre_RNI"
+replace outcome_num = 5 if outcome == "fat_max"
+replace outcome_num = 6 if outcome == "mono_RNI"
+replace outcome_num = 7 if outcome == "poly_RNI"
+replace outcome_num = 8 if outcome == "sat_max"
+replace outcome_num = 9 if outcome == "omega3"
+replace outcome_num = 10 if outcome == "prot_RNI"
+replace outcome_num = 11 if outcome == "thiamin_RNI"
+replace outcome_num = 12 if outcome == "ribo_RNI"
+replace outcome_num = 13 if outcome == "niacinEq_RNI"
+replace outcome_num = 14 if outcome == "vitB6_RNI"
+replace outcome_num = 15 if outcome == "vitB12_RNI"
+replace outcome_num = 16 if outcome == "folate_RNI"
+replace outcome_num = 17 if outcome == "vitC_RNI"
+replace outcome_num = 18 if outcome == "ret_RNI"
+replace outcome_num = 19 if outcome == "vitD_RNI"
+replace outcome_num = 20 if outcome == "vitE_min"
+replace outcome_num = 21 if outcome == "calc_RNI"
+replace outcome_num = 22 if outcome == "phos_RNI"
+replace outcome_num = 23 if outcome == "mag_RNI"
+replace outcome_num = 24 if outcome == "sodium_RNI"
+replace outcome_num = 25 if outcome == "pot_RNI"
+replace outcome_num = 26 if outcome == "iron_RNI"
+replace outcome_num = 27 if outcome == "zinc_RNI"
+replace outcome_num = 28 if outcome == "selen_RNI"
+replace outcome_num = 29 if outcome == "iodine_RNI"
 
-label define out_lb 1 "Carbohydrates < min (267g)" 2 "Non-milk sugars > max (27g)" 3 "Fibre < RNI (30g)" 4 "Fat > max (78g)" 5 "Monounsaturated fat < RNI (29g)" 6 "Polyunsaturated fat < RNI (14g)" 7 "Saturated fat > max (24g)" 8 "Omega-3 < 0.2g (from fish)" 9 "Protein < RNI (51g)" 10 "Thiamin < RNI (0.9mg)" 11 "Riboflavin < RNI (1.4mg)" 12 "Niacin equivalent < RNI (13.2mg)" 13 "Vitamin B6 < RNI (1.2mg)" 14 "Vitamin B12 < RNI (1.5ug)" 15 "Folate < RNI (300ug)" 16 "Vitamin C < RNI (50mg)" 17 "Retinol/Vitamin A < RNI (700ug)" 18 "Vitamin D < RNI (10ug)" 19 "Vitamin E < min (3.8ug)" 20 "Calcium < RNI (700mg)" 21 "Phosphorus < RNI (550mg)" 22 "Magnesium < RNI (270mg)" 23 "Sodium < RNI (1.6g) | > max (2.4g)" 24 "Potassium < RNI (3500mg)" 25 "Iron < RNI (14.8mg)" 26 "Zinc < RNI (7mg)" 27 "Selenium < RNI (60ug)" 28 "Iodine < RNI (140ug)"
+label define out_lb 1 "Energy < EAR (9,200kJ)" 2 "Carbohydrates < min (267g)" 3 "Free sugars > max (27g)" 4 "NSP Fibre < RNI (22.5g)" 5 "Fat > max (78g)" 6 "Monounsaturated fat < RNI (29g)" 7 "Polyunsaturated fat < RNI (14g)" 8 "Saturated fat > max (24g)" 9 "Omega-3 < 0.2g (from fish)" 10 "Protein < RNI (51g)" 11 "Thiamin < RNI (0.9mg)" 12 "Riboflavin < RNI (1.4mg)" 13 "Niacin equivalent < RNI (13.2mg)" 14 "Vitamin B6 < RNI (1.2mg)" 15 "Vitamin B12 < RNI (1.5ug)" 16 "Folate < RNI (300ug)" 17 "Vitamin C < RNI (50mg)" 18 "Retinol/Vitamin A < RNI (700ug)" 19 "Vitamin D < RNI (10ug)" 20 "Vitamin E < min (3.8ug)" 21 "Calcium < RNI (700mg)" 22 "Phosphorus < RNI (550mg)" 23 "Magnesium < RNI (270mg)" 24 "Sodium < RNI (1.6g) | > max (2.4g)" 25 "Potassium < RNI (3500mg)" 26 "Iron < RNI (14.8mg)" 27 "Zinc < RNI (7mg)" 28 "Selenium < RNI (60ug)" 29 "Iodine < RNI (140ug)"
 
 numlabel out_lb, add
 label value outcome_num out_lb
@@ -4518,7 +4612,7 @@ numlabel out_lb, remove
 *** Now make the plots and explore how RSBB is related to RNIs
 
 ** Starting with belief in God
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
@@ -4528,7 +4622,7 @@ twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
 	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot)) ///
 	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(vsmall) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(vsmall) angle(0)) ///
 	title("Belief in God (ref = no)") ///
 	legend(order(1 "Not sure" 2 "Yes"))
 	
@@ -4538,10 +4632,10 @@ graph export ".\PregC_Results\NutrientsRNI_BeliefInGod_pvalues.pdf", replace
 * Now explore how belief in God associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold - Then save these results as CSV files to potentially use as tables
 bysort outcome exposure model: egen p_combined = min(p)
 
-sort outcome exposure level
+sort outcome_num exposure level
 
 gen belief_bon = 0
-replace belief_bon = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05/28
+replace belief_bon = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05/29
 tab belief_bon
 
 list outcome level coef-p if belief_bon == 1, clean
@@ -4559,7 +4653,7 @@ outsheet outcome level coef-p belief_05 belief_bon using ".\PregC_Results\nutRNI
 
 
 ** Next, religious affiliation
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
@@ -4569,7 +4663,7 @@ twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & //
 	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot)) ///
 	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(vsmall) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(vsmall) angle(0)) ///
 	title("Religious Affiliation (ref = none)") ///
 	legend(order(1 "Christian" 2 "Other"))
 	
@@ -4577,7 +4671,7 @@ graph export ".\PregC_Results\NutrientsRNI_Religion_pvalues.pdf", replace
 
 * Now explore how religious affiliation associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
 gen relig_bon = 0
-replace relig_bon = 1 if exposure == "Denomination (ref = none)" & model == "MI" & p_combined < 0.05/28
+replace relig_bon = 1 if exposure == "Denomination (ref = none)" & model == "MI" & p_combined < 0.05/29
 tab relig_bon
 
 list outcome level coef-p if relig_bon == 1, clean
@@ -4595,7 +4689,7 @@ outsheet outcome level coef-p relig_05 relig_bon using ".\PregC_Results\nutRNI_r
 
 
 * Next to church attendance
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
@@ -4605,7 +4699,7 @@ twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a"
 	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot)) ///
 	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(vsmall) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(vsmall) angle(0)) ///
 	title("Church Attendance (ref = not at all)") ///
 	legend(order(1 "Min once a month" 2 "Min once a year"))
 	
@@ -4613,7 +4707,7 @@ graph export ".\PregC_Results\NutrientsRNI_ChurchAttendance_pvalues.pdf", replac
 
 * Now explore how church attendance associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
 gen attend_bon = 0
-replace attend_bon = 1 if exposure == "Church attendance (ref = not a" & model == "MI" & p_combined < 0.05/28
+replace attend_bon = 1 if exposure == "Church attendance (ref = not a" & model == "MI" & p_combined < 0.05/29
 tab attend_bon
 
 list outcome level coef-p if attend_bon == 1, clean
@@ -4631,7 +4725,7 @@ outsheet outcome level coef-p attend_05 attend_bon using ".\PregC_Results\nutRNI
 
 
 * And finally belief and relgion
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
@@ -4643,7 +4737,7 @@ twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non"
 	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot)) ///
 	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(vsmall) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(vsmall) angle(0)) ///
 	title("Belief and religion (ref = none)") ///
 	legend(order(1 "Christian believer" 2 "Christian non-believer" 3 "Other"))
 		
@@ -4651,7 +4745,7 @@ graph export ".\PregC_Results\NutrientsRNI_BeliefAndReligion_pvalues.pdf", repla
 
 * Now explore how belief and religion associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
 gen belief_relig_bon = 0
-replace belief_relig_bon = 1 if exposure == "Belief and religion (ref = non" & model == "MI" & p_combined < 0.05/28
+replace belief_relig_bon = 1 if exposure == "Belief and religion (ref = non" & model == "MI" & p_combined < 0.05/29
 tab belief_relig_bon
 
 list outcome level coef-p if belief_relig_bon == 1, clean
@@ -4669,7 +4763,7 @@ outsheet outcome level coef-p belief_relig_05 belief_relig_bon using ".\PregC_Re
 
 
 ** Combining plots together
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
@@ -4679,14 +4773,14 @@ twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
 	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
 	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(tiny) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(tiny) angle(0)) ///
 	xlabel(, labsize(vsmall)) ///
 	title("Belief in God (ref = no)", size(small)) ///
 	legend(order(1 "Not sure" 2 "Yes") size(vsmall)) ///
 	name(belief, replace)
 	
 
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
@@ -4696,13 +4790,13 @@ twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & //
 	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
 	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(tiny) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(tiny) angle(0)) ///
 	xlabel(, labsize(vsmall)) ///
 	title("Religious Affiliation (ref = none)", size(small)) ///
 	legend(order(1 "Christian" 2 "Other") size(vsmall)) ///
 	name(relig, replace)
 	
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
@@ -4712,13 +4806,13 @@ twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a"
 	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
 	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(tiny) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(tiny) angle(0)) ///
 	xlabel(, labsize(vsmall)) ///
 	title("Church Attendance (ref = not at all)", size(small)) ///
 	legend(order(1 "Min once a month" 2 "Min once a year") size(vsmall)) ///
 	name(attend, replace)
 	
-local bon_threshold = -log10(0.05/28)
+local bon_threshold = -log10(0.05/29)
 local threshold_05 = -log10(0.05)
 
 twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
@@ -4730,7 +4824,7 @@ twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non"
 	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
 	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
 	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
-	ylabel(1(1)28, valuelabel labsize(tiny) angle(0)) ///
+	ylabel(1(1)29, valuelabel labsize(tiny) angle(0)) ///
 	xlabel(, labsize(vsmall)) ///
 	title("Belief and religion (ref = none)", size(small)) ///
 	legend(order(1 "Christian believer" 2 "Christian non-believer" 3 "Other") ///
