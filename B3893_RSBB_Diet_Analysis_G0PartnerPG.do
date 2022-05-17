@@ -1,6 +1,6 @@
 ***** Analysis code for 'religion and diet' study (B3893) - Exploring potential differences in dietary patterns by religiosity - G0 partner/father age 4 (PG file).
 *** Created 25/10/2021 by Dan Major-Smith
-*** Stata version 16.0
+*** Stata version 17.0
 
 
 **********************************************************************************
@@ -4573,6 +4573,2210 @@ twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non"
 
 graph combine belief relig attend belief_relig, imargin(0 0 0 0)
 graph export ".\G0Partner_Age4_Results\NutrientsRNI_combined_pvalues.pdf", replace	
+
+graph close _all
+
+
+
+******************************************************************************
+*** Want to repeat these nutrient analyses, but this time adjusting for total energy intake. It's not super-clear whether energy intake is a mediator or a confounder of the RSBB-nutrient intake association, so will adjust for energy intake as a sensitivity analysis to see if results differ.
+
+*** Starting with total nutrient intake
+
+** Read in the imputed data (if skipping imputation) and make sure is in flong format
+use "imp_nutrients_age4_PG.dta", clear
+mi convert flong
+
+
+** Create CCA marker variables for each exposure
+
+* 1) Belief in God
+tab pb150 if _mi_m == 0, m
+
+gen belief_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 pb150 pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace belief_CCA = 0 if belief_CCA == 1 & `var' >= .
+}
+tab belief_CCA, m
+
+* 2) Denomination
+tab pb153_grp if _mi_m == 0, m
+
+gen denom_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 pb153_grp pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace denom_CCA = 0 if denom_CCA == 1 & `var' >= .
+}
+tab denom_CCA, m
+
+* 3) Church attendance
+tab pb155_grp if _mi_m == 0, m
+
+gen attend_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 pb155_grp pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace attend_CCA = 0 if attend_CCA == 1 & `var' >= .
+}
+tab attend_CCA, m
+
+* 4) Lapsed Christians
+gen lapsed_Xian = .
+replace lapsed_Xian = 1 if (pb150 == 3 | pb150 == 2) & pb153_grp == 1
+replace lapsed_Xian = 2 if (pb150 == 3 | pb150 == 2) & pb153_grp == 2
+replace lapsed_Xian = 3 if pb150 == 1 & pb153_grp == 2
+replace lapsed_Xian = 4 if lapsed_Xian == . & pb150 != . & pb153_grp != .
+
+label define lapsed_lb 1 "Non-believer and no affiliation" 2 "Christian non-believer" 3 "Christian believer" 4 "Other", replace
+numlabel lapsed_lb, add
+label value lapsed_Xian lapsed_lb
+tab lapsed_Xian, m
+tab lapsed_Xian if _mi_m == 0, m
+
+gen lapsed_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 lapsed_Xian pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace lapsed_CCA = 0 if lapsed_CCA == 1 & `var' >= .
+}
+tab lapsed_CCA, m
+
+
+*** Now set up a 'postfile' to save results to, loop over each outcome, and save the results of the unadjusted model (CCA), adjusted CCA model, and adjusted MI model
+
+* Create the file to post the data to (the 'capture' just closes the file it it's already open)
+capture postclose pg_nut_adjIntake
+postfile pg_nut_adjIntake str20 outcome str30 exposure str5 model str20 level /// 
+	n coef se lci uci p ///
+	using "age4_PG_nutrient_adjIntake_results.dta", replace
+	
+* Will also save another postfile, which just has the overall p-value testing for an overall effect of the exposure on the outcome
+capture postclose pg_nut_p_adjIntake
+postfile pg_nut_p_adjIntake str20 outcome str30 exposure str5 model p_exp ///
+	using "age4_PG_nutrient_p_adjIntake_results.dta", replace
+
+	
+foreach var of varlist pg2501-pg2504 pg2506-pg2536 {
+	
+	// Save the outcome variable as a macro
+	if "`var'" == "pg2501" {
+		local outcome = "Calcium (mg)"
+	}
+	else if "`var'" == "pg2502" {
+		local outcome = "Carbohydrate (g)"
+	}
+	else if "`var'" == "pg2503" {
+		local outcome = "Carotene (ug)"
+	}
+	else if "`var'" == "pg2504" {
+		local outcome = "Cholesterol (mg)"
+	}
+	else if "`var'" == "pg2506" {
+		local outcome = "Fat (g)"
+	}
+	else if "`var'" == "pg2507" {
+		local outcome = "Omega-3 (g)"
+	}
+	else if "`var'" == "pg2510" {
+		local outcome = "Folate (ug)"
+	}
+	else if "`var'" == "pg2511" {
+		local outcome = "Iodine (ug)"
+	}
+	else if "`var'" == "pg2512" {
+		local outcome = "Iron (mg)"
+	}
+	else if "`var'" == "pg2513" {
+		local outcome = "Magnesium (mg)"
+	}
+	else if "`var'" == "pg2514" {
+		local outcome = "Monounsaturated fat (mg)"
+	}
+	else if "`var'" == "pg2515" {
+		local outcome = "Niacin equivalent (mg)"
+	}
+	else if "`var'" == "pg2516" {
+		local outcome = "Non-milk sugars (g)"
+	}
+	else if "`var'" == "pg2517" {
+		local outcome = "Fibre (g)"
+	}
+	else if "`var'" == "pg2518" {
+		local outcome = "Phosphorus (mg)"
+	}
+	else if "`var'" == "pg2519" {
+		local outcome = "Polyunsaturated fat (g)"
+	}
+	else if "`var'" == "pg2520" {
+		local outcome = "Potassium (mg)"
+	}
+	else if "`var'" == "pg2521" {
+		local outcome = "Protein (g)"
+	}
+	else if "`var'" == "pg2522" {
+		local outcome = "Retinol (ug)"
+	}
+	else if "`var'" == "pg2523" {
+		local outcome = "Riboflavin (mg)"
+	}
+	else if "`var'" == "pg2524" {
+		local outcome = "Selenium (ug)"
+	}
+	else if "`var'" == "pg2525" {
+		local outcome = "Saturated fat (g)"
+	}
+	else if "`var'" == "pg2526" {
+		local outcome = "Sodium (mg)"
+	}
+	else if "`var'" == "pg2527" {
+		local outcome = "Starch (g)"
+	}
+	else if "`var'" == "pg2528" {
+		local outcome = "Sugar (g)"
+	}
+	else if "`var'" == "pg2529" {
+		local outcome = "Thiamin (mg)"
+	}
+	else if "`var'" == "pg2531" {
+		local outcome = "Vitamin C (mg)"
+	}
+	else if "`var'" == "pg2532" {
+		local outcome = "Vitamin B6 (mg)"
+	}
+	else if "`var'" == "pg2533" {
+		local outcome = "Vitamin B12 (ug)"
+	}
+	else if "`var'" == "pg2534" {
+		local outcome = "Vitamin D (ug)"
+	}
+	else if "`var'" == "pg2535" {
+		local outcome = "Vitamin E (mg)"
+	}
+	else {
+		local outcome = "Zinc (mg)"
+	}
+	//local outcome = "`var'"
+	
+	//// Exposure 1) Belief in God
+	local exp = "Belief (ref = no)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' ib3.pb150 if belief_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Not sure"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Yes"
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Not sure"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Yes"
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab belief_CCA
+	local n = r(N)
+	
+	mi estimate: regress `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Not sure"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Yes"
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+	
+	//// Exposure 2) Denomination affiliation
+	local exp = "Denomination (ref = none)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' i.pb153_grp if denom_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Christian"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Christian"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab denom_CCA
+	local n = r(N)
+	
+	mi estimate: regress `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Christian"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+		
+		
+	//// Exposure 3) Church attendance
+	local exp = "Church attendance (ref = not at all)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' ib3.pb155_grp if attend_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Min once a month"
+	
+	matrix res = r(table)
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Min once a year"
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Min once a month"
+	
+	matrix res = r(table)
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Min once a year"
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab attend_CCA
+	local n = r(N)
+	
+	mi estimate: regress `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Min once a month"
+	
+	matrix res = r(table)
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Min once a year"
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	mi test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+		
+		
+	//// Exposure 4) 'Lapsed' Christians
+	local exp = "Belief and religion (ref = none)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' i.lapsed_Xian if lapsed_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Christian non-believer"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Christian believer"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,4]
+	local se = res[2,4]
+	local lci = res[5,4]
+	local uci = res[6,4]
+	local p = res[4,4]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	regress `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Christian non-believer"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Christian believer"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,4]
+	local se = res[2,4]
+	local lci = res[5,4]
+	local uci = res[6,4]
+	local p = res[4,4]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab lapsed_CCA
+	local n = r(N)
+	
+	mi estimate: regress `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Christian non-believer"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Christian believer"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,4]
+	local se = res[2,4]
+	local lci = res[5,4]
+	local uci = res[6,4]
+	local p = res[4,4]
+	
+	post pg_nut_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+}
+
+postclose pg_nut_adjIntake
+postclose pg_nut_p_adjIntake
+
+
+*** Save the results testing exposure on outcome as CSV file, as easier to work with (split by exposure, as this is how SI is arranged, and only include the MI results)
+use "age4_PG_nutrient_p_adjIntake_results.dta", clear
+
+* Need to recode the outcome variables to numeric and put in more sensible order (currently alphabetical)
+tab outcome
+
+gen outcome_num = 0
+replace outcome_num = 1 if outcome == "Carbohydrate (g)"
+replace outcome_num = 2 if outcome == "Sugar (g)"
+replace outcome_num = 3 if outcome == "Non-milk sugars (g)"
+replace outcome_num = 4 if outcome == "Starch (g)"
+replace outcome_num = 5 if outcome == "Fibre (g)"
+replace outcome_num = 6 if outcome == "Fat (g)"
+replace outcome_num = 7 if outcome == "Monounsaturated fat "
+replace outcome_num = 8 if outcome == "Polyunsaturated fat "
+replace outcome_num = 9 if outcome == "Saturated fat (g)"
+replace outcome_num = 10 if outcome == "Omega-3 (g)"
+replace outcome_num = 11 if outcome == "Cholesterol (mg)"
+replace outcome_num = 12 if outcome == "Protein (g)"
+replace outcome_num = 13 if outcome == "Thiamin (mg)"
+replace outcome_num = 14 if outcome == "Riboflavin (mg)"
+replace outcome_num = 15 if outcome == "Niacin equivalent (m"
+replace outcome_num = 16 if outcome == "Vitamin B6 (mg)"
+replace outcome_num = 17 if outcome == "Vitamin B12 (ug)"
+replace outcome_num = 18 if outcome == "Folate (ug)"
+replace outcome_num = 19 if outcome == "Vitamin C (mg)"
+replace outcome_num = 20 if outcome == "Retinol (ug)"
+replace outcome_num = 21 if outcome == "Carotene (ug)"
+replace outcome_num = 22 if outcome == "Vitamin D (ug)"
+replace outcome_num = 23 if outcome == "Vitamin E (mg)"
+replace outcome_num = 24 if outcome == "Calcium (mg)"
+replace outcome_num = 25 if outcome == "Phosphorus (mg)"
+replace outcome_num = 26 if outcome == "Magnesium (mg)"
+replace outcome_num = 27 if outcome == "Sodium (mg)"
+replace outcome_num = 28 if outcome == "Potassium (mg)"
+replace outcome_num = 29 if outcome == "Iron (mg)"
+replace outcome_num = 30 if outcome == "Zinc (mg)"
+replace outcome_num = 31 if outcome == "Selenium (ug)"
+replace outcome_num = 32 if outcome == "Iodine (ug)"
+
+label define out_lb 1 "Carbohydrates (g)" 2 "Sugars (g)" 3 "Free sugars (g)" 4 "Starch (g)" 5 "NSP (Fibre; g)" 6 "Fat (g)" 7 "Monounsaturated fat (g)" 8 "Polyunsaturated fat (g)" 9 "Saturated fat (g)" 10 "Omega-3 (g; from fish)" 11 "Cholesterol (mg)" 12 "Protein (g)" 13 "Thiamin (mg)" 14 "Riboflavin (mg)" 15 "Niacin equivalent (mg)" 16 "Vitamin B6 (mg)" 17 "Vitamin B12 (ug)" 18 "Folate (ug)" 19 "Vitamin C (mg)" 20 "Retinol/Vitamin A (ug)" 21 "Carotene (ug)" 22 "Vitamin D (ug)" 23 "Vitamin E (mg)" 24 "Calcium (mg)" 25 "Phosphorus (mg)" 26 "Magnesium (mg)" 27 "Sodium (mg)" 28 "Potassium (mg)" 29 "Iron (mg)" 30 "Zinc (mg)" 31 "Selenium (ug)" 32 "Iodine (ug)"
+
+numlabel out_lb, add
+label value outcome_num out_lb
+tab outcome_num
+
+numlabel out_lb, remove
+
+sort outcome_num
+drop outcome_num
+
+format p_exp %9.3f
+
+outsheet using ".\G0Partner_Age4_Results\nut_belief_p_adjIntake.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nut_religion_p_adjIntake.csv" if exposure == "Denomination (ref = none)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nut_attend_p_adjIntake.csv" if exposure == "Church attendance (ref = not a" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nut_belief_relig_p_adjIntake.csv" if exposure == "Belief and religion (ref = non" & model == "MI", comma replace
+
+
+
+********************************************************************************
+*** Make some plots based on the nutrient results. As lots of results, will first filter by Bonferonni-corrected p-value to include just those with the strongest association with RSBB
+use "age4_PG_nutrient_adjIntake_results.dta", clear
+format %9.3f coef-p
+
+* Transform the p-value by -log10 to get p-values on similar order of magnitude to be readable (0 = p-value of 1)
+gen logp = -log10(p)
+sum logp
+
+* What's the Bonferroni correction here? Are 32 outcomes assessed, so 0.05 / 32 = 0.0016 (and -log10 of this is 2.81) - As nutrients not independent from one another perhaps the Bonferroni correction is too conservative, but will go with it for now.
+
+** Plot -log10 of each variable and see if any reach Bonferroni significance (will use imputed results for this)
+
+* Need to recode the outcome variables to numeric and put in more sensible order (currently alphabetical)
+tab outcome
+
+gen outcome_num = 0
+replace outcome_num = 1 if outcome == "Carbohydrate (g)"
+replace outcome_num = 2 if outcome == "Sugar (g)"
+replace outcome_num = 3 if outcome == "Non-milk sugars (g)"
+replace outcome_num = 4 if outcome == "Starch (g)"
+replace outcome_num = 5 if outcome == "Fibre (g)"
+replace outcome_num = 6 if outcome == "Fat (g)"
+replace outcome_num = 7 if outcome == "Monounsaturated fat "
+replace outcome_num = 8 if outcome == "Polyunsaturated fat "
+replace outcome_num = 9 if outcome == "Saturated fat (g)"
+replace outcome_num = 10 if outcome == "Omega-3 (g)"
+replace outcome_num = 11 if outcome == "Cholesterol (mg)"
+replace outcome_num = 12 if outcome == "Protein (g)"
+replace outcome_num = 13 if outcome == "Thiamin (mg)"
+replace outcome_num = 14 if outcome == "Riboflavin (mg)"
+replace outcome_num = 15 if outcome == "Niacin equivalent (m"
+replace outcome_num = 16 if outcome == "Vitamin B6 (mg)"
+replace outcome_num = 17 if outcome == "Vitamin B12 (ug)"
+replace outcome_num = 18 if outcome == "Folate (ug)"
+replace outcome_num = 19 if outcome == "Vitamin C (mg)"
+replace outcome_num = 20 if outcome == "Retinol (ug)"
+replace outcome_num = 21 if outcome == "Carotene (ug)"
+replace outcome_num = 22 if outcome == "Vitamin D (ug)"
+replace outcome_num = 23 if outcome == "Vitamin E (mg)"
+replace outcome_num = 24 if outcome == "Calcium (mg)"
+replace outcome_num = 25 if outcome == "Phosphorus (mg)"
+replace outcome_num = 26 if outcome == "Magnesium (mg)"
+replace outcome_num = 27 if outcome == "Sodium (mg)"
+replace outcome_num = 28 if outcome == "Potassium (mg)"
+replace outcome_num = 29 if outcome == "Iron (mg)"
+replace outcome_num = 30 if outcome == "Zinc (mg)"
+replace outcome_num = 31 if outcome == "Selenium (ug)"
+replace outcome_num = 32 if outcome == "Iodine (ug)"
+
+label define out_lb 1 "Carbohydrates (g)" 2 "Sugars (g)" 3 "Free sugars (g)" 4 "Starch (g)" 5 "NSP (Fibre; g)" 6 "Fat (g)" 7 "Monounsaturated fat (g)" 8 "Polyunsaturated fat (g)" 9 "Saturated fat (g)" 10 "Omega-3 (g; from fish)" 11 "Cholesterol (mg)" 12 "Protein (g)" 13 "Thiamin (mg)" 14 "Riboflavin (mg)" 15 "Niacin equivalent (mg)" 16 "Vitamin B6 (mg)" 17 "Vitamin B12 (ug)" 18 "Folate (ug)" 19 "Vitamin C (mg)" 20 "Retinol/Vitamin A (ug)" 21 "Carotene (ug)" 22 "Vitamin D (ug)" 23 "Vitamin E (mg)" 24 "Calcium (mg)" 25 "Phosphorus (mg)" 26 "Magnesium (mg)" 27 "Sodium (mg)" 28 "Potassium (mg)" 29 "Iron (mg)" 30 "Zinc (mg)" 31 "Selenium (ug)" 32 "Iodine (ug)"
+
+numlabel out_lb, add
+label value outcome_num out_lb
+tab outcome_num
+
+numlabel out_lb, remove
+
+
+*** Now make the plots and explore how RSBB is related to nutrient intake
+
+** Starting with belief in God
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Not sure", col(black) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Yes", col(red) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(vsmall) angle(0)) ///
+	title("Belief in God (ref = no)") ///
+	legend(order(1 "Not sure" 2 "Yes"))
+	
+graph export ".\G0Partner_Age4_Results\Nutrients_BeliefInGod_pvalues_adjIntake.pdf", replace	
+
+
+* Now explore how belief in God associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold - Then save these results as CSV files to potentially use as tables
+bysort outcome exposure model: egen p_combined = min(p)
+
+sort outcome_num exposure level
+
+gen belief_bon = 0
+replace belief_bon = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05/32
+tab belief_bon
+
+list outcome level coef-p if belief_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nut_belief_bon_adjIntake.csv" if belief_bon == 1, comma replace
+
+gen belief_05 = 0
+replace belief_05 = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05
+tab belief_05
+
+list outcome level coef-p if belief_05 == 1, clean
+outsheet outcome level coef-p belief_bon using ".\G0Partner_Age4_Results\nut_belief_05_adjIntake.csv" if belief_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p belief_05 belief_bon using ".\G0Partner_Age4_Results\nut_belief_full_adjIntake.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
+
+
+** Next, religious affiliation
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Christian", col(red) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Other", col(black) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(vsmall) angle(0)) ///
+	title("Religious Affiliation (ref = none)") ///
+	legend(order(1 "Christian" 2 "Other"))
+	
+graph export ".\G0Partner_Age4_Results\Nutrients_Religion_pvalues_adjIntake.pdf", replace	
+
+* Now explore how religious affiliation associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
+gen relig_bon = 0
+replace relig_bon = 1 if exposure == "Denomination (ref = none)" & model == "MI" & p_combined < 0.05/32
+tab relig_bon
+
+list outcome level coef-p if relig_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nut_religion_bon_adjIntake.csv" if relig_bon == 1, comma replace
+
+gen relig_05 = 0
+replace relig_05 = 1 if exposure == "Denomination (ref = none)" & model == "MI" & p_combined < 0.05
+tab relig_05
+
+list outcome level coef-p if relig_05 == 1, clean
+outsheet outcome level coef-p relig_bon using ".\G0Partner_Age4_Results\nut_religion_05_adjIntake.csv" if relig_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p relig_05 relig_bon using ".\G0Partner_Age4_Results\nut_religion_full_adjIntake.csv" if exposure == "Denomination (ref = none)" & model == "MI", comma replace
+
+
+* Next to church attendance
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a month", col(red) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a year", col(black) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(vsmall) angle(0)) ///
+	title("Church Attendance (ref = not at all)") ///
+	legend(order(1 "Min once a month" 2 "Min once a year"))
+	
+graph export ".\G0Partner_Age4_Results\Nutrients_ChurchAttendance_pvalues_adjIntake.pdf", replace	
+
+* Now explore how church attendance associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
+gen attend_bon = 0
+replace attend_bon = 1 if exposure == "Church attendance (ref = not a" & model == "MI" & p_combined < 0.05/32
+tab attend_bon
+
+list outcome level coef-p if attend_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nut_attend_bon_adjIntake.csv" if attend_bon == 1, comma replace
+
+gen attend_05 = 0
+replace attend_05 = 1 if exposure == "Church attendance (ref = not a" & model == "MI" & p_combined < 0.05
+tab attend_05
+
+list outcome level coef-p if attend_05 == 1, clean
+outsheet outcome level coef-p attend_bon using ".\G0Partner_Age4_Results\nut_attend_05_adjIntake.csv" if attend_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p attend_05 attend_bon using ".\G0Partner_Age4_Results\nut_attend_full_adjIntake.csv" if exposure == "Church attendance (ref = not a" & model == "MI", comma replace
+
+
+* And finally belief and relgion
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian believer", col(red) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian non-believ", col(black) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Other", col(blue) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(vsmall) angle(0)) ///
+	title("Belief and religion (ref = none)") ///
+	legend(order(1 "Christian believer" 2 "Christian non-believer" 3 "Other"))
+		
+graph export ".\G0Partner_Age4_Results\Nutrients_BeliefAndReligion_pvalues_adjIntake.pdf", replace	
+
+* Now explore how belief and religion associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
+gen belief_relig_bon = 0
+replace belief_relig_bon = 1 if exposure == "Belief and religion (ref = non" & model == "MI" & p_combined < 0.05/32
+tab belief_relig_bon
+
+list outcome level coef-p if belief_relig_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nut_belief_relig_bon_adjIntake.csv" if belief_relig_bon == 1, comma replace
+
+gen belief_relig_05 = 0
+replace belief_relig_05 = 1 if exposure == "Belief and religion (ref = non" & model == "MI" & p_combined < 0.05
+tab belief_relig_05
+
+list outcome level coef-p if belief_relig_05 == 1, clean
+outsheet outcome level coef-p belief_relig_bon using ".\G0Partner_Age4_Results\nut_belief_relig_05_adjIntake.csv" if belief_relig_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p belief_relig_05 belief_relig_bon using ".\G0Partner_Age4_Results\nut_belief_relig_full_adjIntake.csv" if exposure == "Belief and religion (ref = non" & model == "MI", comma replace
+
+
+* Combining plots together
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Not sure", col(black) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Yes", col(red) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Belief in God (ref = no)", size(small)) ///
+	legend(order(1 "Not sure" 2 "Yes") size(vsmall)) ///
+	name(belief, replace)
+
+local bon_threshold = -log10(0.05/3)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Christian", col(red) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Other", col(black) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Religious Affiliation (ref = none)", size(small)) ///
+	legend(order(1 "Christian" 2 "Other") size(vsmall)) ///
+	name(relig, replace)
+	
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a month", col(red) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a year", col(black) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Church Attendance (ref = not at all)", size(small)) ///
+	legend(order(1 "Min once a month" 2 "Min once a year") size(vsmall)) ///
+	name(attend, replace)
+	
+local bon_threshold = -log10(0.05/32)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian believer", col(red) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian non-believ", col(black) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Other", col(blue) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ///
+	ytitle("") ysc(reverse) ///
+	ylabel(1(1)32, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Belief and religion (ref = none)", size(small)) ///
+	legend(order(1 "Christian believer" 2 "Christian non-believer" 3 "Other") ///
+	cols(3) size(vsmall)) ///
+	name(belief_relig, replace)
+
+graph combine belief relig attend belief_relig, imargin(0 0 0 0)
+graph export ".\G0Partner_Age4_Results\Nutrients_combined_pvalues_adjIntake.pdf", replace	
+
+graph close _all
+
+
+
+***********************************************************************************
+*** And now repeat energy intake adjustment for meeting RNIs
+
+** Read in the imputed nutrient data and make sure is in flong format
+use "imp_nutrients_age4_PG.dta", clear
+mi convert flong
+
+
+** Create CCA marker variables for each exposure
+
+* 1) Belief in God
+tab pb150 if _mi_m == 0, m
+
+gen belief_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 pb150 pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace belief_CCA = 0 if belief_CCA == 1 & `var' >= .
+}
+tab belief_CCA, m
+
+* 2) Denomination
+tab pb153_grp if _mi_m == 0, m
+
+gen denom_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 pb153_grp pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace denom_CCA = 0 if denom_CCA == 1 & `var' >= .
+}
+tab denom_CCA, m
+
+* 3) Church attendance
+tab pb155_grp if _mi_m == 0, m
+
+gen attend_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 pb155_grp pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace attend_CCA = 0 if attend_CCA == 1 & `var' >= .
+}
+tab attend_CCA, m
+
+* 4) Lapsed Christians
+gen lapsed_Xian = .
+replace lapsed_Xian = 1 if (pb150 == 3 | pb150 == 2) & pb153_grp == 1
+replace lapsed_Xian = 2 if (pb150 == 3 | pb150 == 2) & pb153_grp == 2
+replace lapsed_Xian = 3 if pb150 == 1 & pb153_grp == 2
+replace lapsed_Xian = 4 if lapsed_Xian == . & pb150 != . & pb153_grp != .
+
+label define lapsed_lb 1 "Non-believer and no affiliation" 2 "Christian non-believer" 3 "Christian believer" 4 "Other", replace
+numlabel lapsed_lb, add
+label value lapsed_Xian lapsed_lb
+tab lapsed_Xian, m
+tab lapsed_Xian if _mi_m == 0, m
+
+gen lapsed_CCA = 1 if _mi_m == 0
+foreach var of varlist pg2501 lapsed_Xian pg9996a c666a c765_grp dimd2010q5 a006_grp b594_grp dur01ind_grp c801_grp a525_grp b032_grp {
+	replace lapsed_CCA = 0 if lapsed_CCA == 1 & `var' >= .
+}
+tab lapsed_CCA, m
+
+
+*** Now go through each nutrient and code as binary variable whether meets recommended daily intakes
+
+** Calcium (mg) - RNI of 700mg for adult men
+gen calc_RNI = .
+replace calc_RNI = 1 if pg2501 < 700
+replace calc_RNI = 0 if pg2501 >= 700 & pg2501 < .
+tab calc_RNI if _mi_m == 0, m
+
+label define calc_lb 0 ">= RNI (700mg)" 1 "< RNI (700mg)"
+numlabel calc_lb, add
+label values calc_RNI calc_lb
+tab calc_RNI if _mi_m == 0, m
+
+** Carbohydrate (g) - Minimum 333g for adult men
+gen carb_min = .
+replace carb_min = 1 if pg2502 < 333
+replace carb_min = 0 if pg2502 >= 333 & pg2502 < .
+tab carb_min if _mi_m == 0, m
+
+label define carb_lb 0 ">= min (333g)" 1 "< min (333mg)"
+numlabel carb_lb, add
+label values carb_min carb_lb
+tab carb_min if _mi_m == 0, m
+
+** Carotene (ug) - No recommendations for carotene
+
+** Cholesterol (mg) - No recommendations for cholesterol
+
+** Fat (g) - Maximum 97g for adult men
+gen fat_max = .
+replace fat_max = 1 if pg2506 > 97 & pg2506 < .
+replace fat_max = 0 if pg2506 <= 97
+tab fat_max if _mi_m == 0, m
+
+label define fat_lb 0 "<= max (97g)" 1 "> max (97g)"
+numlabel fat_lb, add
+label values fat_max fat_lb
+tab fat_max if _mi_m == 0, m
+
+** Omega-3 fatty acid from fish only (g) - No RNI, but more omega-3 recommended (esp. in pregnancy). As of potential importance, will code into low (<0.25g/day) and high (>0.25g/day) as this is where there is a natural split in the data for pregnancy omega-3 data (but not at age 4; but important to bear in mind that this is not based on any formal RNI recommendations, and omega-3 is only counted for fish, not sources from other foods)
+sum pg2507 if pg2507 > 0.2 & pg2507 < 0.25 & _mi_m == 0
+
+gen omega3 = .
+replace omega3 = 1 if pg2507 < 0.25
+replace omega3 = 0 if pg2507 >= 0.25 & pg2507 < .
+tab omega3 if _mi_m == 0, m
+
+label define omega3_lb 0 "High (>0.25g)" 1 "Low (<0.25g)"
+numlabel omega3_lb, add
+label values omega3 omega3_lb
+tab omega3 if _mi_m == 0, m
+
+** Folate (ug) - RNI of 200ug for adult men
+gen folate_RNI = .
+replace folate_RNI = 1 if pg2510 < 200
+replace folate_RNI = 0 if pg2510 >= 200 & pg2510 < .
+tab folate_RNI if _mi_m == 0, m
+
+label define folate_lb 0 ">= RNI (200ug)" 1 "< RNI (200ug)"
+numlabel folate_lb, add
+label values folate_RNI folate_lb
+tab folate_RNI if _mi_m == 0, m
+
+** Iodine (ug) - RNI of 140ug for adult men
+gen iodine_RNI = .
+replace iodine_RNI = 1 if pg2511 < 140
+replace iodine_RNI = 0 if pg2511 >= 140 & pg2511 < .
+tab iodine_RNI if _mi_m == 0, m
+
+label define iodine_lb 0 ">= RNI (140ug)" 1 "< RNI (140ug)"
+numlabel iodine_lb, add
+label values iodine_RNI iodine_lb
+tab iodine_RNI if _mi_m == 0, m
+
+** Iron (mg) - RNI of 8.7mg for adult men
+gen iron_RNI = .
+replace iron_RNI = 1 if pg2512 < 8.7
+replace iron_RNI = 0 if pg2512 >= 8.7 & pg2512 < .
+tab iron_RNI if _mi_m == 0, m
+
+label define iron_lb 0 ">= RNI (8.7mg)" 1 "< RNI (8.7mg)"
+numlabel iron_lb, add
+label values iron_RNI iron_lb
+tab iron_RNI if _mi_m == 0, m
+
+** Magnesium (mg) - RNI of 300mg for adult men
+gen mag_RNI = .
+replace mag_RNI = 1 if pg2513 < 300
+replace mag_RNI = 0 if pg2513 >= 300 & pg2513 < .
+tab mag_RNI if _mi_m == 0, m
+
+label define mag_lb 0 ">= RNI (300mg)" 1 "< RNI (300mg)"
+numlabel mag_lb, add
+label values mag_RNI mag_lb
+tab mag_RNI if _mi_m == 0, m
+
+** Mono-unsaturated fat (g) - RNI of 36g for adult men
+gen mono_RNI = .
+replace mono_RNI = 1 if pg2514 < 36
+replace mono_RNI = 0 if pg2514 >= 36 & pg2514 < .
+tab mono_RNI if _mi_m == 0, m
+
+label define mono_lb 0 ">= RNI (36g)" 1 "< RNI (36g)"
+numlabel mono_lb, add
+label values mono_RNI mono_lb
+tab mono_RNI if _mi_m == 0, m
+
+** Niacin equivalent (mg; niacin + tyrpt/60) - RNI of 16.5mg for adult men
+gen niacinEq_RNI = .
+replace niacinEq_RNI = 1 if pg2515 < 16.5
+replace niacinEq_RNI = 0 if pg2515 >= 16.5 & pg2515 < .
+tab niacinEq_RNI if _mi_m == 0, m
+
+label define niacinEq_lb 0 ">= RNI (16.5mg)" 1 "< RNI (16.5mg)"
+numlabel niacinEq_lb, add
+label values niacinEq_RNI niacinEq_lb
+tab niacinEq_RNI if _mi_m == 0, m
+
+** Non-milk extrinsic sugars (g; 'free sugars') - Maximum 33g for adult men
+gen sugar_max = .
+replace sugar_max = 1 if pg2516 > 33 & pg2516 < .
+replace sugar_max = 0 if pg2516 <= 33
+tab sugar_max if _mi_m == 0, m
+
+label define sugar_lb 0 "<= max (33g)" 1 "> max (33g)"
+numlabel sugar_lb, add
+label values sugar_max sugar_lb
+tab sugar_max if _mi_m == 0, m
+
+** Fibre (g) - RNI of 22.5g for adult men
+gen fibre_RNI = .
+replace fibre_RNI = 1 if pg2517 < 22.5
+replace fibre_RNI = 0 if pg2517 >= 22.5 & pg2517 < .
+tab fibre_RNI if _mi_m == 0, m
+
+label define fibre_lb 0 ">= RNI (22.5g)" 1 "< RNI (22.5g)"
+numlabel fibre_lb, add
+label values fibre_RNI fibre_lb
+tab fibre_RNI if _mi_m == 0, m
+
+** Phosphorous (mg) - RNI of 550mg for adult men
+gen phos_RNI = .
+replace phos_RNI = 1 if pg2518 < 550
+replace phos_RNI = 0 if pg2518 >= 550 & pg2518 < .
+tab phos_RNI if _mi_m == 0, m
+
+label define phos_lb 0 ">= RNI (550mg)" 1 "< RNI (550mg)"
+numlabel phos_lb, add
+label values phos_RNI phos_lb
+tab phos_RNI if _mi_m == 0, m
+
+** Poly-unsaturated fat (g) - RNI of 18g for adult men
+gen poly_RNI = .
+replace poly_RNI = 1 if pg2519 < 18
+replace poly_RNI = 0 if pg2519 >= 18 & pg2519 < .
+tab poly_RNI if _mi_m == 0, m
+
+label define poly_lb 0 ">= RNI (18g)" 1 "< RNI (18g)"
+numlabel poly_lb, add
+label values poly_RNI poly_lb
+tab poly_RNI if _mi_m == 0, m
+
+** Potassium (mg) - RNI of 3500mg for adult men
+gen pot_RNI = .
+replace pot_RNI = 1 if pg2520 < 3500
+replace pot_RNI = 0 if pg2520 >= 3500 & pg2520 < .
+tab pot_RNI if _mi_m == 0, m
+
+label define pot_lb 0 ">= RNI (3500mg)" 1 "< RNI (3500mg)"
+numlabel pot_lb, add
+label values pot_RNI pot_lb
+tab pot_RNI if _mi_m == 0, m
+
+** Protein (g) - RNI of 55.5g for adult men
+gen prot_RNI = .
+replace prot_RNI = 1 if pg2521 < 55.5
+replace prot_RNI = 0 if pg2521 >= 55.5 & pg2521 < .
+tab prot_RNI if _mi_m == 0, m
+
+label define prot_lb 0 ">= RNI (55.5g)" 1 "< RNI (55.5g)"
+numlabel prot_lb, add
+label values prot_RNI prot_lb
+tab prot_RNI if _mi_m == 0, m
+
+** Retinol/Vitamin A (ug) - RNI of 700ug for adult men
+gen ret_RNI = .
+replace ret_RNI = 1 if pg2522 < 700
+replace ret_RNI = 0 if pg2522 >= 700 & pg2522 < .
+tab ret_RNI if _mi_m == 0, m
+
+label define ret_lb 0 ">= RNI (700ug)" 1 "< RNI (700ug)"
+numlabel ret_lb, add
+label values ret_RNI ret_lb
+tab ret_RNI if _mi_m == 0, m
+
+** Riboflavin (mg) - RNI of 1.3mg for adult men
+gen ribo_RNI = .
+replace ribo_RNI = 1 if pg2523 < 1.3
+replace ribo_RNI = 0 if pg2523 >= 1.3 & pg2523 < .
+tab ribo_RNI if _mi_m == 0, m
+
+label define ribo_lb 0 ">= RNI (1.3mg)" 1 "< RNI (1.3mg)"
+numlabel ribo_lb, add
+label values ribo_RNI ribo_lb
+tab ribo_RNI if _mi_m == 0, m
+
+** Saturated fat (g) - Maximum 31g for adult men
+gen sat_max = .
+replace sat_max = 1 if pg2525 > 31 & pg2525 < .
+replace sat_max = 0 if pg2525 <= 31
+tab sat_max if _mi_m == 0, m
+
+label define sat_lb 0 "<= max (31g)" 1 "> max (31g)"
+numlabel sat_lb, add
+label values sat_max sat_lb
+tab sat_max if _mi_m == 0, m
+
+** Selenium (ug) - RNI of 75ug for adult men
+gen selen_RNI = .
+replace selen_RNI = 1 if pg2524 < 75
+replace selen_RNI = 0 if pg2524 >= 75 & pg2524 < .
+tab selen_RNI if _mi_m == 0, m
+
+label define selen_lb 0 ">= RNI (75ug)" 1 "< RNI (75ug)"
+numlabel selen_lb, add
+label values selen_RNI selen_lb
+tab selen_RNI if _mi_m == 0, m
+
+** Sodium (mg) - RNI of 1600mg for adult men, but recommended max intake of 2400mg (6g salt)
+gen sodium_RNI = .
+replace sodium_RNI = 1 if (pg2526 < 1600 | pg2526 > 2400) & pg2526 < .
+replace sodium_RNI = 0 if pg2526 >= 1600 & pg2526 <= 2400
+tab sodium_RNI if _mi_m == 0, m
+
+label define sodium_lb 0 ">= RNI (1600mg) & < max (2400mg)" 1 "< RNI (1600mg) OR > max (2400mg)"
+numlabel sodium_lb, add
+label values sodium_RNI sodium_lb
+tab sodium_RNI if _mi_m == 0, m
+
+** Starch (g) - No recommendations for starch
+
+** Total sugar (g) - No recommendations for total sugar
+
+** Thiamin (mg) - RNI of 1.0mg for adult men
+gen thiamin_RNI = .
+replace thiamin_RNI = 1 if pg2529 < 1
+replace thiamin_RNI = 0 if pg2529 >= 1 & pg2529 < .
+tab thiamin_RNI if _mi_m == 0, m
+
+label define thiamin_lb 0 ">= RNI (1mg)" 1 "< RNI (1mg)"
+numlabel thiamin_lb, add
+label values thiamin_RNI thiamin_lb
+tab thiamin_RNI if _mi_m == 0, m
+
+** Vitamin C (mg) - RNI of 40mg for adult men
+gen vitC_RNI = .
+replace vitC_RNI = 1 if pg2531 < 40
+replace vitC_RNI = 0 if pg2531 >= 40 & pg2531 < .
+tab vitC_RNI if _mi_m == 0, m
+
+label define vitC_lb 0 ">= RNI (40mg)" 1 "< RNI (40mg)"
+numlabel vitC_lb, add
+label values vitC_RNI vitC_lb
+tab vitC_RNI if _mi_m == 0, m
+
+** Vitamin B6 (mg) - RNI of 1.4mg for adult men
+gen vitB6_RNI = .
+replace vitB6_RNI = 1 if pg2532 < 1.4
+replace vitB6_RNI = 0 if pg2532 >= 1.4 & pg2532 < .
+tab vitB6_RNI if _mi_m == 0, m
+
+label define vitB6_lb 0 ">= RNI (1.4mg)" 1 "< RNI (1.4mg)"
+numlabel vitB6_lb, add
+label values vitB6_RNI vitB6_lb
+tab vitB6_RNI if _mi_m == 0, m
+
+** Vitamin B12 (ug) - RNI of 1.5ug for adult men
+gen vitB12_RNI = .
+replace vitB12_RNI = 1 if pg2533 < 1.5
+replace vitB12_RNI = 0 if pg2533 >= 1.5 & pg2533 < .
+tab vitB12_RNI if _mi_m == 0, m
+
+label define vitB12_lb 0 ">= RNI (1.5ug)" 1 "< RNI (1.5ug)"
+numlabel vitB12_lb, add
+label values vitB12_RNI vitB12_lb
+tab vitB12_RNI if _mi_m == 0, m
+
+** Vitamin D (ug) - RNI of 10ug for adult men
+gen vitD_RNI = .
+replace vitD_RNI = 1 if pg2534 < 10
+replace vitD_RNI = 0 if pg2534 >= 10 & pg2534 < .
+tab vitD_RNI if _mi_m == 0, m
+
+label define vitD_lb 0 ">= RNI (10ug)" 1 "< RNI (10ug)"
+numlabel vitD_lb, add
+label values vitD_RNI vitD_lb
+tab vitD_RNI if _mi_m == 0, m
+
+** Vitamin E (mg) - Minimum of 4ug for adult men
+gen vitE_min = .
+replace vitE_min = 1 if pg2535 < 4
+replace vitE_min = 0 if pg2535 >= 4 & pg2535 < .
+tab vitE_min if _mi_m == 0, m
+
+label define vitE_lb 0 ">= min (4ug)" 1 "< min (4ug)"
+numlabel vitE_lb, add
+label values vitE_min vitE_lb
+tab vitE_min if _mi_m == 0, m
+
+** Zinc (mg) - RNI of 9.5mg for adult men
+gen zinc_RNI = .
+replace zinc_RNI = 1 if pg2536 < 9.5
+replace zinc_RNI = 0 if pg2536 >= 9.5 & pg2536 < .
+tab zinc_RNI if _mi_m == 0, m
+
+label define zinc_lb 0 ">= RNI (9.5mg)" 1 "< RNI (9.5mg)"
+numlabel zinc_lb, add
+label values zinc_RNI zinc_lb
+tab zinc_RNI if _mi_m == 0, m
+
+
+*** Check this data, then run through same analyses as above exploring nutrient intake by RSBB
+sum calc_RNI-zinc_RNI
+
+
+* As so few people below niacin RNI, will drop this variable
+drop niacinEq_RNI
+
+* As no-one below phosphorous threshold, will drop this var
+drop phos_RNI
+
+* As so few people below vitamin B12 RNI, will drop this variable
+drop vitB12_RNI
+
+* As so few people below vitamin D RNI, will drop this variable
+drop vitD_RNI
+
+* As so few people below vitamin E RNI (and causes script below to crash, as some empty cells when cross-tabbed with RSBB), will drop this variable
+drop vitE_min
+
+
+*** Now set up a 'postfile' to save results to, loop over each outcome, and save the results of the unadjusted model (CCA), adjusted CCA model, and adjusted MI model
+
+* Create the file to post the data to (the 'capture' just closes the file it it's already open)
+capture postclose pg_nut_RNI_adjIntake
+postfile pg_nut_RNI_adjIntake str20 outcome str30 exposure str5 model str20 level /// 
+	n coef se lci uci p ///
+	using "age4_PG_nutrient_RNI_adjIntake_results.dta", replace
+	
+* Will also save another postfile, which just has the overall p-value testing for an overall effect of the exposure on the outcome
+capture postclose pg_nut_RNI_p_adjIntake
+postfile pg_nut_RNI_p_adjIntake str20 outcome str30 exposure str5 model p_exp ///
+	using "age4_PG_nutrient_RNI_adjIntake_p_results.dta", replace
+
+	
+foreach var of varlist calc_RNI-zinc_RNI {
+	
+	// Save the outcome variable as a macro
+	local outcome = "`var'"
+	
+	//// Exposure 1) Belief in God
+	local exp = "Belief (ref = no)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' ib3.pb150 if belief_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Not sure"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Yes"
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Not sure"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Yes"
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable - For some reason the 'mi estimate: logistic' command gives the output in log-odds, rather than odds ratios, so need to manually construct these from the log-odds coefficient, the log SE and the critical value
+	quietly tab belief_CCA
+	local n = r(N)
+	
+	mi estimate: logistic `var' ib3.pb150 pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Not sure"
+	
+	matrix res = r(table)
+	local coef_log = res[1,2]
+	local se = res[2,2]
+	local crit = res[8,2]
+	local p = res[4,2]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Yes"
+	local coef_log = res[1,1]
+	local se = res[2,1]
+	local crit = res[8,1]
+	local p = res[4,1]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb150 2.pb150
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+	
+	//// Exposure 2) Denomination affiliation
+	local exp = "Denomination (ref = none)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' i.pb153_grp if denom_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Christian"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Christian"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab denom_CCA
+	local n = r(N)
+	
+	mi estimate: logistic `var' i.pb153_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Christian"
+	
+	matrix res = r(table)
+	local coef_log = res[1,2]
+	local se = res[2,2]
+	local crit = res[8,2]
+	local p = res[4,2]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef_log = res[1,3]
+	local se = res[2,3]
+	local crit = res[8,3]
+	local p = res[4,3]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.pb153_grp 3.pb153_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+		
+		
+	//// Exposure 3) Church attendance
+	local exp = "Church attendance (ref = not at all)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' ib3.pb155_grp if attend_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Min once a month"
+	
+	matrix res = r(table)
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Min once a year"
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Min once a month"
+	
+	matrix res = r(table)
+	local coef = res[1,1]
+	local se = res[2,1]
+	local lci = res[5,1]
+	local uci = res[6,1]
+	local p = res[4,1]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Min once a year"
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab attend_CCA
+	local n = r(N)
+	
+	mi estimate: logistic `var' ib3.pb155_grp pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Min once a month"
+	
+	matrix res = r(table)
+	local coef_log = res[1,1]
+	local se = res[2,1]
+	local crit = res[8,1]
+	local p = res[4,1]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Min once a year"
+	local coef_log = res[1,2]
+	local se = res[2,2]
+	local crit = res[8,2]
+	local p = res[4,2]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 1.pb155_grp 2.pb155_grp
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+		
+		
+	//// Exposure 4) 'Lapsed' Christians
+	local exp = "Belief and religion (ref = none)"
+	
+	// Univariable/unadjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' i.lapsed_Xian if lapsed_CCA == 1 & _mi_m == 0
+	
+	local n = e(N)
+	local model = "uni"
+	local level = "Christian non-believer"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Christian believer"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,4]
+	local se = res[2,4]
+	local lci = res[5,4]
+	local uci = res[6,4]
+	local p = res[4,4]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Multivariable/adjusted model (CCA) - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	logistic `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505 if _mi_m == 0
+	
+	local n = e(N)
+	local model = "adj"
+	local level = "Christian non-believer"
+	
+	matrix res = r(table)
+	local coef = res[1,2]
+	local se = res[2,2]
+	local lci = res[5,2]
+	local uci = res[6,2]
+	local p = res[4,2]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Christian believer"
+	local coef = res[1,3]
+	local se = res[2,3]
+	local lci = res[5,3]
+	local uci = res[6,3]
+	local p = res[4,3]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef = res[1,4]
+	local se = res[2,4]
+	local lci = res[5,4]
+	local uci = res[6,4]
+	local p = res[4,4]
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+	
+	// Now test for overall effect of categorical exposure on outcome and save result
+	test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+	
+		
+	// Imputed and adjusted model - Run model, then store coefficients as local macros and post results to file - Repeat for each level of variable
+	quietly tab lapsed_CCA
+	local n = r(N)
+	
+	mi estimate: logistic `var' i.lapsed_Xian pg9996a i.c666a i.c765_grp i.dimd2010q5 i.a006_grp i.b594_grp i.dur01ind_grp i.c801_grp i.a525_grp i.b032_grp pg2505
+	
+	local model = "MI"
+	local level = "Christian non-believer"
+	
+	matrix res = r(table)
+	local coef_log = res[1,2]
+	local se = res[2,2]
+	local crit = res[8,2]
+	local p = res[4,2]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Christian believer"
+	local coef_log = res[1,3]
+	local se = res[2,3]
+	local crit = res[8,3]
+	local p = res[4,3]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	local level = "Other"
+	local coef_log = res[1,4]
+	local se = res[2,4]
+	local crit = res[8,4]
+	local p = res[4,4]
+	
+	local coef = exp(`coef_log')
+	local lci = exp(`coef_log' - (`se' * `crit'))
+	local uci = exp(`coef_log' + (`se' * `crit'))
+	
+	post pg_nut_RNI_adjIntake ("`outcome'") ("`exp'") ("`model'") ("`level'") ///
+		(`n') (`coef') (`se') (`lci') (`uci') (`p')
+		
+	// Now test for overall effect of categorical exposure on outcome and save result
+	mi test 2.lapsed_Xian 3.lapsed_Xian 4.lapsed_Xian
+	local p_exp = r(p)
+	post pg_nut_RNI_p_adjIntake ("`outcome'") ("`exp'") ("`model'") (`p_exp')
+}
+
+postclose pg_nut_RNI_adjIntake
+postclose pg_nut_RNI_p_adjIntake
+
+
+*** Save the results testing exposure on outcome as CSV file, as easier to work with (split by exposure, as this is how SI is arranged, and only include the MI results)
+use "age4_PG_nutrient_RNI_adjIntake_p_results.dta", clear
+
+* Need to recode the outcome variables to numeric and put in more sensible order (currently alphabetical)
+tab outcome
+
+gen outcome_num = 0
+replace outcome_num = 1 if outcome == "carb_min"
+replace outcome_num = 2 if outcome == "sugar_max"
+replace outcome_num = 3 if outcome == "fibre_RNI"
+replace outcome_num = 4 if outcome == "fat_max"
+replace outcome_num = 5 if outcome == "mono_RNI"
+replace outcome_num = 6 if outcome == "poly_RNI"
+replace outcome_num = 7 if outcome == "sat_max"
+replace outcome_num = 8 if outcome == "omega3"
+replace outcome_num = 9 if outcome == "prot_RNI"
+replace outcome_num = 10 if outcome == "thiamin_RNI"
+replace outcome_num = 11 if outcome == "ribo_RNI"
+*replace outcome_num = 12 if outcome == "niacinEq_RNI"
+replace outcome_num = 12 if outcome == "vitB6_RNI"
+*replace outcome_num = 14 if outcome == "vitB12_RNI"
+replace outcome_num = 13 if outcome == "folate_RNI"
+replace outcome_num = 14 if outcome == "vitC_RNI"
+replace outcome_num = 15 if outcome == "ret_RNI"
+*replace outcome_num = 18 if outcome == "vitD_RNI"
+*replace outcome_num = 18 if outcome == "vitE_min"
+replace outcome_num = 16 if outcome == "calc_RNI"
+*replace outcome_num = 20 if outcome == "phos_RNI"
+replace outcome_num = 17 if outcome == "mag_RNI"
+replace outcome_num = 18 if outcome == "sodium_RNI"
+replace outcome_num = 19 if outcome == "pot_RNI"
+replace outcome_num = 20 if outcome == "iron_RNI"
+replace outcome_num = 21 if outcome == "zinc_RNI"
+replace outcome_num = 22 if outcome == "selen_RNI"
+replace outcome_num = 23 if outcome == "iodine_RNI"
+
+label define out_lb 1 "Carbohydrates < min (333g)" 2 "Free sugars > max (33g)" 3 "NSP (Fibre) < RNI (30g)" 4 "Fat > max (97g)" 5 "Monounsaturated fat < RNI (36g)" 6 "Polyunsaturated fat < RNI (18g)" 7 "Saturated fat > max (31g)" 8 "Omega-3 < 0.25g (from fish)" 9 "Protein < RNI (55.5g)" 10 "Thiamin < RNI (1mg)" 11 "Riboflavin < RNI (1.3mg)" 12 "Vitamin B6 < RNI (1.4mg)" 13 "Folate < RNI (200ug)" 14 "Vitamin C < RNI (40mg)" 15 "Retinol/Vitamin A < RNI (700ug)" 16 "Calcium < RNI (700mg)" 17 "Magnesium < RNI (300mg)" 18 "Sodium < RNI (1.6g) | > max (2.4g)" 19 "Potassium < RNI (3500mg)" 20 "Iron < RNI (8.7mg)" 21 "Zinc < RNI (9.5mg)" 22 "Selenium < RNI (75ug)" 23 "Iodine < RNI (140ug)"
+
+numlabel out_lb, add
+label value outcome_num out_lb
+tab outcome_num
+
+numlabel out_lb, remove
+
+sort outcome_num
+drop outcome_num
+
+format p_exp %9.3f
+
+outsheet using ".\G0Partner_Age4_Results\nutRNI_belief_p_adjIntake.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nutRNI_religion_p_adjIntake.csv" if exposure == "Denomination (ref = none)" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nutRNI_attend_p_adjIntake.csv" if exposure == "Church attendance (ref = not a" & model == "MI", comma replace
+outsheet using ".\G0Partner_Age4_Results\nutRNI_belief_relig_p_adjIntake.csv" if exposure == "Belief and religion (ref = non" & model == "MI", comma replace
+
+
+
+********************************************************************************
+*** Make some plots based on the nutrient results. As lots of results, will first filter by Bonferonni-corrected p-value to include just those with the strongest association with RSBB
+use "age4_PG_nutrient_RNI_adjIntake_results.dta", clear
+format %9.3f coef-p
+
+* Transform the p-value by -log10 to get p-values on similar order of magnitude to be readable (0 = p-value of 1)
+gen logp = -log10(p)
+sum logp
+
+* What's the Bonferroni correction here? Are 23 outcomes assessed, so 0.05 / 23 = 0.0022 (and -log10 of this is 2.67; note that in C quest there were 29 comparisons, but niacin, phosphorous, vit B12, vit D and vit E low n meeting RNI and causes imputation issues) - As nutrients not independent from one another perhaps the Bonferroni correction is too conservative, but will go with it for now.
+
+** Plot -log10 of each variable and see if any reach Bonferroni significance (will use imputed results for this)
+
+* Need to recode the outcome variables to numeric and put in more sensible order (currently alphabetical)
+tab outcome
+
+gen outcome_num = 0
+replace outcome_num = 1 if outcome == "carb_min"
+replace outcome_num = 2 if outcome == "sugar_max"
+replace outcome_num = 3 if outcome == "fibre_RNI"
+replace outcome_num = 4 if outcome == "fat_max"
+replace outcome_num = 5 if outcome == "mono_RNI"
+replace outcome_num = 6 if outcome == "poly_RNI"
+replace outcome_num = 7 if outcome == "sat_max"
+replace outcome_num = 8 if outcome == "omega3"
+replace outcome_num = 9 if outcome == "prot_RNI"
+replace outcome_num = 10 if outcome == "thiamin_RNI"
+replace outcome_num = 11 if outcome == "ribo_RNI"
+*replace outcome_num = 12 if outcome == "niacinEq_RNI"
+replace outcome_num = 12 if outcome == "vitB6_RNI"
+*replace outcome_num = 14 if outcome == "vitB12_RNI"
+replace outcome_num = 13 if outcome == "folate_RNI"
+replace outcome_num = 14 if outcome == "vitC_RNI"
+replace outcome_num = 15 if outcome == "ret_RNI"
+*replace outcome_num = 18 if outcome == "vitD_RNI"
+*replace outcome_num = 18 if outcome == "vitE_min"
+replace outcome_num = 16 if outcome == "calc_RNI"
+*replace outcome_num = 20 if outcome == "phos_RNI"
+replace outcome_num = 17 if outcome == "mag_RNI"
+replace outcome_num = 18 if outcome == "sodium_RNI"
+replace outcome_num = 19 if outcome == "pot_RNI"
+replace outcome_num = 20 if outcome == "iron_RNI"
+replace outcome_num = 21 if outcome == "zinc_RNI"
+replace outcome_num = 22 if outcome == "selen_RNI"
+replace outcome_num = 23 if outcome == "iodine_RNI"
+
+label define out_lb 1 "Carbohydrates < min (333g)" 2 "Free sugars > max (33g)" 3 "NSP (Fibre) < RNI (30g)" 4 "Fat > max (97g)" 5 "Monounsaturated fat < RNI (36g)" 6 "Polyunsaturated fat < RNI (18g)" 7 "Saturated fat > max (31g)" 8 "Omega-3 < 0.25g (from fish)" 9 "Protein < RNI (55.5g)" 10 "Thiamin < RNI (1mg)" 11 "Riboflavin < RNI (1.3mg)" 12 "Vitamin B6 < RNI (1.4mg)" 13 "Folate < RNI (200ug)" 14 "Vitamin C < RNI (40mg)" 15 "Retinol/Vitamin A < RNI (700ug)" 16 "Calcium < RNI (700mg)" 17 "Magnesium < RNI (300mg)" 18 "Sodium < RNI (1.6g) | > max (2.4g)" 19 "Potassium < RNI (3500mg)" 20 "Iron < RNI (8.7mg)" 21 "Zinc < RNI (9.5mg)" 22 "Selenium < RNI (75ug)" 23 "Iodine < RNI (140ug)"
+
+numlabel out_lb, add
+label value outcome_num out_lb
+tab outcome_num
+
+numlabel out_lb, remove
+
+
+*** Now make the plots and explore how RSBB is related to RNIs
+
+** Starting with belief in God
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Not sure", col(black) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Yes", col(red) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(vsmall) angle(0)) ///
+	title("Belief in God (ref = no)") ///
+	legend(order(1 "Not sure" 2 "Yes"))
+	
+graph export ".\G0Partner_Age4_Results\NutrientsRNI_BeliefInGod_pvalues_adjIntake.pdf", replace	
+
+
+* Now explore how belief in God associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold - Then save these results as CSV files to potentially use as tables
+bysort outcome exposure model: egen p_combined = min(p)
+
+sort outcome_num exposure level
+
+gen belief_bon = 0
+replace belief_bon = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05/23
+tab belief_bon
+
+list outcome level coef-p if belief_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nutRNI_belief_bon_adjIntake.csv" if belief_bon == 1, comma replace
+
+gen belief_05 = 0
+replace belief_05 = 1 if exposure == "Belief (ref = no)" & model == "MI" & p_combined < 0.05
+tab belief_05
+
+list outcome level coef-p if belief_05 == 1, clean
+outsheet outcome level coef-p belief_bon using ".\G0Partner_Age4_Results\nutRNI_belief_05_adjIntake.csv" if belief_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p belief_05 belief_bon using ".\G0Partner_Age4_Results\nutRNI_belief_full_adjIntake.csv" if exposure == "Belief (ref = no)" & model == "MI", comma replace
+
+
+** Next, religious affiliation
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Christian", col(red) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Other", col(black) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(vsmall) angle(0)) ///
+	title("Religious Affiliation (ref = none)") ///
+	legend(order(1 "Christian" 2 "Other"))
+	
+graph export ".\G0Partner_Age4_Results\NutrientsRNI_Religion_pvalues_adjIntake.pdf", replace	
+
+* Now explore how religious affiliation associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
+gen relig_bon = 0
+replace relig_bon = 1 if exposure == "Denomination (ref = none)" & model == "MI" & p_combined < 0.05/23
+tab relig_bon
+
+list outcome level coef-p if relig_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nutRNI_religion_bon_adjIntake.csv" if relig_bon == 1, comma replace
+
+gen relig_05 = 0
+replace relig_05 = 1 if exposure == "Denomination (ref = none)" & model == "MI" & p_combined < 0.05
+tab relig_05
+
+list outcome level coef-p if relig_05 == 1, clean
+outsheet outcome level coef-p relig_bon using ".\G0Partner_Age4_Results\nutRNI_religion_05_adjIntake.csv" if relig_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p relig_05 relig_bon using ".\G0Partner_Age4_Results\nutRNI_religion_full_adjIntake.csv" if exposure == "Denomination (ref = none)" & model == "MI", comma replace
+
+
+* Next to church attendance
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a month", col(red) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a year", col(black) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(vsmall) angle(0)) ///
+	title("Church Attendance (ref = not at all)") ///
+	legend(order(1 "Min once a month" 2 "Min once a year"))
+	
+graph export ".\G0Partner_Age4_Results\NutrientsRNI_ChurchAttendance_pvalues_adjIntake.pdf", replace	
+
+* Now explore how church attendance associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
+gen attend_bon = 0
+replace attend_bon = 1 if exposure == "Church attendance (ref = not a" & model == "MI" & p_combined < 0.05/23
+tab attend_bon
+
+list outcome level coef-p if attend_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nutRNI_attend_bon_adjIntake.csv" if attend_bon == 1, comma replace
+
+gen attend_05 = 0
+replace attend_05 = 1 if exposure == "Church attendance (ref = not a" & model == "MI" & p_combined < 0.05
+tab attend_05
+
+list outcome level coef-p if attend_05 == 1, clean
+outsheet outcome level coef-p attend_bon using ".\G0Partner_Age4_Results\nutRNI_attend_05_adjIntake.csv" if attend_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p attend_05 attend_bon using ".\G0Partner_Age4_Results\nutRNI_attend_full_adjIntake.csv" if exposure == "Church attendance (ref = not a" & model == "MI", comma replace
+
+
+* And finally belief and relgion
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian believer", col(red) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian non-believ", col(black) msize(small) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Other", col(blue) msize(small) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(dash)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot)) ///
+	xtitle("-log10 of p-value") ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(vsmall) angle(0)) ///
+	title("Belief and religion (ref = none)") ///
+	legend(order(1 "Christian believer" 2 "Christian non-believer" 3 "Other"))
+		
+graph export ".\G0Partner_Age4_Results\NutrientsRNI_BeliefAndReligion_pvalues_adjIntake.pdf", replace	
+
+* Now explore how belief and religion associated with nutrient intake both when using Bonferroni threshold and when using ordinary 0.5 threshold
+gen belief_relig_bon = 0
+replace belief_relig_bon = 1 if exposure == "Belief and religion (ref = non" & model == "MI" & p_combined < 0.05/23
+tab belief_relig_bon
+
+list outcome level coef-p if belief_relig_bon == 1, clean
+outsheet outcome level coef-p using ".\G0Partner_Age4_Results\nutRNI_belief_relig_bon_adjIntake.csv" if belief_relig_bon == 1, comma replace
+
+gen belief_relig_05 = 0
+replace belief_relig_05 = 1 if exposure == "Belief and religion (ref = non" & model == "MI" & p_combined < 0.05
+tab belief_relig_05
+
+list outcome level coef-p if belief_relig_05 == 1, clean
+outsheet outcome level coef-p belief_relig_bon using ".\G0Partner_Age4_Results\nutRNI_belief_relig_05_adjIntake.csv" if belief_relig_05 == 1, comma replace
+
+* And also save table with full results
+outsheet outcome level coef-p belief_relig_05 belief_relig_bon using ".\G0Partner_Age4_Results\nutRNI_belief_relig_full_adjIntake.csv" if exposure == "Belief and religion (ref = non" & model == "MI", comma replace
+
+
+** Combining plots together
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Not sure", col(black) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief (ref = no)" & ///
+		model == "MI" & level == "Yes", col(red) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Belief in God (ref = no)", size(small)) ///
+	legend(order(1 "Not sure" 2 "Yes") size(vsmall)) ///
+	name(belief, replace)
+	
+
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Christian", col(red) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Denomination (ref = none)" & ///
+		model == "MI" & level == "Other", col(black) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Religious Affiliation (ref = none)", size(small)) ///
+	legend(order(1 "Christian" 2 "Other") size(vsmall)) ///
+	name(relig, replace)
+	
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a month", col(red) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Church attendance (ref = not a" & ///
+		model == "MI" & level == "Min once a year", col(black) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Church Attendance (ref = not at all)", size(small)) ///
+	legend(order(1 "Min once a month" 2 "Min once a year") size(vsmall)) ///
+	name(attend, replace)
+	
+local bon_threshold = -log10(0.05/23)
+local threshold_05 = -log10(0.05)
+
+twoway (scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian believer", col(red) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Christian non-believ", col(black) msize(vsmall) msym(D))  ///
+	(scatter outcome_num logp if exposure == "Belief and religion (ref = non" & ///
+		model == "MI" & level == "Other", col(blue) msize(vsmall) msym(D)),  ///
+	xline(`bon_threshold', lcol(black) lpattern(shortdash) lwidth(thin)) ///
+	xline(`threshold_05', lcol(black) lpattern(dot) lwidth(thin)) ///
+	xtitle("-log10 of p-value", size(vsmall)) ytitle("") ysc(reverse) ///
+	ylabel(1(1)23, valuelabel labsize(tiny) angle(0)) ///
+	xlabel(, labsize(vsmall)) ///
+	title("Belief and religion (ref = none)", size(small)) ///
+	legend(order(1 "Christian believer" 2 "Christian non-believer" 3 "Other") ///
+	cols(3) size(vsmall)) ///
+	name(belief_relig, replace)
+
+graph combine belief relig attend belief_relig, imargin(0 0 0 0)
+graph export ".\G0Partner_Age4_Results\NutrientsRNI_combined_pvalues_adjIntake.pdf", replace	
 
 graph close _all
 
