@@ -314,7 +314,7 @@ tab dad_age, m
 * Age at PG questionnaire - If missing, will use PB data plus 4 years
 tab pg9996a, m
 
-replace pg9996a = pb910 if pg9996a == . & pb910 < .
+replace pg9996a = pb910 + 4 if pg9996a == . & pb910 < .
 tab pg9996a, m
 
 * Highest education
@@ -3007,7 +3007,8 @@ outsheet using ".\G0Mum_Age4_Results\nut_belief_relig_p.csv" if exposure == "Bel
 ********************************************************************************
 *** Make some plots based on the nutrient results. As lots of results, will first filter by Bonferonni-corrected p-value to include just those with the strongest association with RSBB
 use "age4_J_nutrient_results.dta", clear
-format %9.3f coef-p
+format %9.2g coef-uci
+format %9.3f p
 
 * Transform the p-value by -log10 to get p-values on similar order of magnitude to be readable (0 = p-value of 1)
 gen logp = -log10(p)
@@ -4258,7 +4259,8 @@ outsheet using ".\G0Mum_Age4_Results\nutRNI_belief_relig_p.csv" if exposure == "
 ********************************************************************************
 *** Make some plots based on the nutrient results. As lots of results, will first filter by Bonferonni-corrected p-value to include just those with the strongest association with RSBB
 use "age4_J_nutrient_RNI_results.dta", clear
-format %9.3f coef-p
+format %9.2f coef-uci
+format %9.3f p
 
 * Transform the p-value by -log10 to get p-values on similar order of magnitude to be readable (0 = p-value of 1)
 gen logp = -log10(p)
@@ -5225,7 +5227,8 @@ outsheet using ".\G0Mum_Age4_Results\nut_belief_relig_p_adjIntake.csv" if exposu
 ********************************************************************************
 *** Make some plots based on the nutrient results. As lots of results, will first filter by Bonferonni-corrected p-value to include just those with the strongest association with RSBB
 use "age4_J_nutrient_adjIntake_results.dta", clear
-format %9.3f coef-p
+format %9.2g coef-uci
+format %9.3f p
 
 * Transform the p-value by -log10 to get p-values on similar order of magnitude to be readable (0 = p-value of 1)
 gen logp = -log10(p)
@@ -6451,7 +6454,8 @@ outsheet using ".\G0Mum_Age4_Results\nutRNI_belief_relig_p_adjIntake.csv" if exp
 ********************************************************************************
 *** Make some plots based on the nutrient results. As lots of results, will first filter by Bonferonni-corrected p-value to include just those with the strongest association with RSBB
 use "age4_J_nutrient_RNI_adjIntake_results.dta", clear
-format %9.3f coef-p
+format %9.2f coef-uci
+format %9.3f p
 
 * Transform the p-value by -log10 to get p-values on similar order of magnitude to be readable (0 = p-value of 1)
 gen logp = -log10(p)
